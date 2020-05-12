@@ -29,7 +29,7 @@ AUI.add(
 		var STR_BLANK = '';
 
 		var isNotEmptyValue = function (item) {
-			return isValue(item) && item !== STR_BLANK;
+			return isValue(item) && item.trim() !== STR_BLANK;
 		};
 
 		var serializeDefinition = function (xmlNamespace, metadata, json) {
@@ -318,47 +318,29 @@ AUI.add(
 					});
 				}
 				else if (assignmentType === 'user') {
-					if (
-						isArray(dataAssignments.userId) &&
-						dataAssignments.userId.filter(isValue).length !== 0
-					) {
-						var xmlUser = XMLUtil.createObj('user');
+					var xmlUser = XMLUtil.createObj('user');
 
-						dataAssignments.userId.forEach((item, index) => {
-							buffer.push(xmlUser.open);
+					buffer.push(xmlUser.open);
 
-							var userContent = null;
-
-							if (isValue(item)) {
-								userContent = XMLUtil.create('userId', item);
-							}
-							else if (
-								isValue(dataAssignments.emailAddress[index])
-							) {
-								userContent = XMLUtil.create(
-									'emailAddress',
-									dataAssignments.emailAddress[index]
-								);
-							}
-							else if (
-								isValue(dataAssignments.screenName[index])
-							) {
-								userContent = XMLUtil.create(
-									'screenName',
-									dataAssignments.screenName[index]
-								);
-							}
-
-							if (userContent) {
-								buffer.push(userContent);
-							}
-
-							buffer.push(xmlUser.close);
+					if (isArray(dataAssignments.userId)) {
+						dataAssignments.userId.filter(isNotEmptyValue).forEach((item) => {
+							buffer.push(XMLUtil.create('userId', item));
 						});
 					}
-					else {
-						buffer.push('<user/>');
+
+					if (isArray(dataAssignments.emailAddress)) {
+						dataAssignments.emailAddress.filter(isNotEmptyValue).forEach((item) => {
+							buffer.push(XMLUtil.create('emailAddress', item));
+						});
 					}
+
+					if (isArray(dataAssignments.screenName)) {
+						dataAssignments.screenName.filter(isNotEmptyValue).forEach((item) => {
+							buffer.push(XMLUtil.create('screenName', item));
+						});
+					}
+
+					buffer.push(xmlUser.close);
 				}
 				else if (assignmentType === 'taskAssignees') {
 					buffer.push('<assignees/>');
