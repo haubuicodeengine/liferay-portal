@@ -4802,7 +4802,7 @@ public class UserLocalServiceImpl extends UserLocalServiceBaseImpl {
 			user.setPasswordModified(false);
 		}
 
-		if (!silentUpdate && (PrincipalThreadLocal.getUserId() != userId)) {
+		if (!silentUpdate) {
 			sendPasswordNotification(
 				user, user.getCompanyId(), password1, null, null, null, null,
 				null, ServiceContextThreadLocal.getServiceContext());
