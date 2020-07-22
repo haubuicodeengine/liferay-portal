@@ -160,16 +160,19 @@ String responseContentType = liferayRenderRequest.getResponseContentType();
 
 String currentURL = PortalUtil.getCurrentURL(request);
 
-String portletResource = ParamUtil.getString(request, "portletResource");
-
-if (Validator.isNull(portletResource)) {
-	portletResource = ParamUtil.getString(liferayRenderRequest, "portletResource");
-}
-
+String portletResource = StringPool.BLANK;
 Portlet portletResourcePortlet = null;
 
-if (Validator.isNotNull(portletResource)) {
-	portletResourcePortlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(), portletResource);
+if(PortletKeys.PORTLET_CONFIGURATION.equals(portletId)) {
+	portletResource = ParamUtil.getString(request, "portletResource");
+
+	if (Validator.isNull(portletResource)) {
+		portletResource = ParamUtil.getString(liferayRenderRequest, "portletResource");
+	}
+
+	if (Validator.isNotNull(portletResource)) {
+		portletResourcePortlet = PortletLocalServiceUtil.getPortletById(company.getCompanyId(), portletResource);
+	}
 }
 
 boolean showCloseIcon = true;
