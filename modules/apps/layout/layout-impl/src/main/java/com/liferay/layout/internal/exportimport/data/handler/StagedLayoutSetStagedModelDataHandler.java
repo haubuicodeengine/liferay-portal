@@ -358,30 +358,10 @@ public class StagedLayoutSetStagedModelDataHandler
 
 		checkLayoutSetPrototypeLayouts(portletDataContext, modifiedLayouts);
 
-		// Show site name
+		// Updates the layout set setting properties
+		// based on the imported layout set
 
-		updateShowSiteName(portletDataContext, importedStagedLayoutSet);
-
-		// Show footer
-
-		updateShowFooter(portletDataContext, importedStagedLayoutSet);
-
-		// Show header
-
-		updateShowHeader(portletDataContext, importedStagedLayoutSet);
-
-		// Show search header
-
-		updateShowSearchHeader(portletDataContext, importedStagedLayoutSet);
-
-		// Show Maximize/Minimize Application Links
-
-		updateShowMaxMinApplicationLinks(
-			portletDataContext, importedStagedLayoutSet);
-
-		// Wrap Widget Page Content
-
-		updateWrapWidgetPageContent(
+		updateLayoutSetSettingsProperties(
 			portletDataContext, importedStagedLayoutSet);
 
 		// Last merge time
@@ -867,6 +847,49 @@ public class StagedLayoutSetStagedModelDataHandler
 
 	protected void updateLayoutSetSettingsProperties(
 			PortletDataContext portletDataContext,
+			StagedLayoutSet importedStagedLayoutSet)
+		throws PortalException {
+
+		// Show site name
+
+		updateLayoutSetSettingsProperties(
+			portletDataContext, importedStagedLayoutSet, Sites.SHOW_SITE_NAME,
+			true);
+
+		// Show footer
+
+		updateLayoutSetSettingsProperties(
+			portletDataContext, importedStagedLayoutSet,
+			"lfr-theme:regular:show-footer", true);
+
+		// Show header
+
+		updateLayoutSetSettingsProperties(
+			portletDataContext, importedStagedLayoutSet,
+			"lfr-theme:regular:show-header", true);
+
+		// Show search header
+
+		updateLayoutSetSettingsProperties(
+			portletDataContext, importedStagedLayoutSet,
+			"lfr-theme:regular:show-header-search", true);
+
+		// Show Maximize/Minimize Application Links
+
+		updateLayoutSetSettingsProperties(
+			portletDataContext, importedStagedLayoutSet,
+			"lfr-theme:regular:show-maximize-minimize-application-links",
+			false);
+
+		// Wrap Widget Page Content
+
+		updateLayoutSetSettingsProperties(
+			portletDataContext, importedStagedLayoutSet,
+			"lfr-theme:regular:wrap-widget-page-content", true);
+	}
+
+	protected void updateLayoutSetSettingsProperties(
+			PortletDataContext portletDataContext,
 			StagedLayoutSet importedLayoutSet, String keyProperty,
 			boolean defaultValue)
 		throws PortalException {
@@ -903,140 +926,6 @@ public class StagedLayoutSetStagedModelDataHandler
 				_layoutSetLocalService.updateLayoutSet(layoutSet);
 			}
 		}
-	}
-
-	protected void updateShowFooter(
-			PortletDataContext portletDataContext,
-			StagedLayoutSet importedLayoutSet)
-		throws PortalException {
-
-		String keyProperty = "lfr-theme:regular:show-footer";
-
-		boolean defaultValue = true;
-
-		updateLayoutSetSettingsProperties(
-			portletDataContext, importedLayoutSet, keyProperty, defaultValue);
-	}
-
-	protected void updateShowHeader(
-			PortletDataContext portletDataContext,
-			StagedLayoutSet importedLayoutSet)
-		throws PortalException {
-
-		String keyProperty = "lfr-theme:regular:show-header";
-
-		boolean defaultValue = true;
-
-		updateLayoutSetSettingsProperties(
-			portletDataContext, importedLayoutSet, keyProperty, defaultValue);
-	}
-
-	protected void updateShowMaxMinApplicationLinks(
-			PortletDataContext portletDataContext,
-			StagedLayoutSet importedLayoutSet)
-		throws PortalException {
-
-		String keyProperty =
-			"lfr-theme:regular:show-maximize-minimize-application-links";
-
-		boolean defaultValue = false;
-
-		updateLayoutSetSettingsProperties(
-			portletDataContext, importedLayoutSet, keyProperty, defaultValue);
-	}
-
-	protected void updateShowSearchHeader(
-			PortletDataContext portletDataContext,
-			StagedLayoutSet importedLayoutSet)
-		throws PortalException {
-
-		LayoutSet layoutSet = _layoutSetLocalService.getLayoutSet(
-			portletDataContext.getGroupId(),
-			portletDataContext.isPrivateLayout());
-
-		UnicodeProperties settingsUnicodeProperties =
-			layoutSet.getSettingsProperties();
-
-		String mergeFailFriendlyURLLayouts =
-			settingsUnicodeProperties.getProperty(
-				Sites.MERGE_FAIL_FRIENDLY_URL_LAYOUTS);
-
-		if (Validator.isNull(mergeFailFriendlyURLLayouts)) {
-			LayoutSet stagedLayoutSet = importedLayoutSet.getLayoutSet();
-
-			UnicodeProperties importedSettingsUnicodeProperties =
-				stagedLayoutSet.getSettingsProperties();
-
-			boolean showSearchHeader = GetterUtil.getBoolean(
-				settingsUnicodeProperties.getProperty(
-					"lfr-theme:regular:show-header-search"),
-				true);
-
-			boolean importedShowSearchHeader = GetterUtil.getBoolean(
-				importedSettingsUnicodeProperties.getProperty(
-					"lfr-theme:regular:show-header-search"),
-				true);
-
-			if (showSearchHeader != importedShowSearchHeader) {
-				settingsUnicodeProperties.setProperty(
-					"lfr-theme:regular:show-header-search",
-					String.valueOf(importedShowSearchHeader));
-
-				_layoutSetLocalService.updateLayoutSet(layoutSet);
-			}
-		}
-	}
-
-	protected void updateShowSiteName(
-			PortletDataContext portletDataContext,
-			StagedLayoutSet importedLayoutSet)
-		throws PortalException {
-
-		LayoutSet layoutSet = _layoutSetLocalService.getLayoutSet(
-			portletDataContext.getGroupId(),
-			portletDataContext.isPrivateLayout());
-
-		UnicodeProperties settingsUnicodeProperties =
-			layoutSet.getSettingsProperties();
-
-		String mergeFailFriendlyURLLayouts =
-			settingsUnicodeProperties.getProperty(
-				Sites.MERGE_FAIL_FRIENDLY_URL_LAYOUTS);
-
-		if (Validator.isNull(mergeFailFriendlyURLLayouts)) {
-			LayoutSet stagedLayoutSet = importedLayoutSet.getLayoutSet();
-
-			UnicodeProperties importedSettingsUnicodeProperties =
-				stagedLayoutSet.getSettingsProperties();
-
-			boolean showSiteName = GetterUtil.getBoolean(
-				settingsUnicodeProperties.getProperty(
-					Sites.SHOW_SITE_NAME, Boolean.TRUE.toString()));
-
-			boolean importedShowSiteName = GetterUtil.getBoolean(
-				importedSettingsUnicodeProperties.getProperty(
-					Sites.SHOW_SITE_NAME, Boolean.TRUE.toString()));
-
-			if (showSiteName != importedShowSiteName) {
-				settingsUnicodeProperties.setProperty(
-					Sites.SHOW_SITE_NAME, String.valueOf(importedShowSiteName));
-
-				_layoutSetLocalService.updateLayoutSet(layoutSet);
-			}
-		}
-	}
-
-	protected void updateWrapWidgetPageContent(
-			PortletDataContext portletDataContext,
-			StagedLayoutSet importedLayoutSet)
-		throws PortalException {
-
-		String keyProperty = "lfr-theme:regular:wrap-widget-page-content";
-
-		boolean defaultValue = true;
-
-		updateLayoutSetSettingsProperties(
-			portletDataContext, importedLayoutSet, keyProperty, defaultValue);
 	}
 
 	private static final Log _log = LogFactoryUtil.getLog(
