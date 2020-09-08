@@ -17,9 +17,8 @@ package com.liferay.portal.action;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.audit.AuditMessage;
 import com.liferay.portal.kernel.audit.AuditRouterUtil;
-import com.liferay.portal.kernel.json.JSONFactory;
-import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
@@ -52,7 +51,6 @@ import com.liferay.portlet.LiferayPortletUtil;
 import com.liferay.portlet.RenderParametersPool;
 import com.liferay.portlet.internal.RenderData;
 import com.liferay.portlet.internal.RenderStateUtil;
-
 
 import java.io.PrintWriter;
 
@@ -316,22 +314,19 @@ public class LayoutAction implements Action {
 					if (Validator.isNotNull(doAsUserId) &&
 						(user.getUserId() != realUser.getUserId())) {
 
-
-						additionalInfoJSONObject = JSONFactoryUtil.createJSONObject();
+						additionalInfoJSONObject = JSONUtil.put(
+							"userId", user.getUserId());
 
 						additionalInfoJSONObject.put(
-							"userId", user.getUserId()
-						).put(
-							"userName", user.getFullName()
-						);
-
+							"userName", user.getFullName());
 					}
 
 					AuditMessage auditMessage = new AuditMessage(
 						ActionKeys.VIEW, realUser.getCompanyId(),
 						realUser.getUserId(), realUser.getFullName(),
-						Layout.class.getName(), String.valueOf(layout.getPlid()),
-						null, additionalInfoJSONObject);
+						Layout.class.getName(),
+						String.valueOf(layout.getPlid()), null,
+						additionalInfoJSONObject);
 
 					AuditRouterUtil.route(auditMessage);
 				}
@@ -471,7 +466,6 @@ public class LayoutAction implements Action {
 			}
 		}
 	}
-
 
 	private static final Log _log = LogFactoryUtil.getLog(LayoutAction.class);
 
