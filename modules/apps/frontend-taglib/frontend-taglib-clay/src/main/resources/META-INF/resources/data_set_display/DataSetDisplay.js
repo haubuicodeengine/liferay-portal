@@ -257,39 +257,36 @@ function DataSetDisplay({
 		}
 	}, [wrapperRef]);
 
-	const refreshData = useCallback(
-		(successNotification) => {
-			setLoading(true);
+	function refreshData(successNotification) {
+		setLoading(true);
 
-			return requestData()
-				.then((data) => {
-					const {
-						message,
-						showSuccessNotification,
-					} = successNotification;
+		return requestData()
+			.then((data) => {
+				if (successNotification?.showSuccessNotification) {
+					openToast({
+						message:
+							successNotification.message ||
+							Liferay.Language.get('table-data-updated'),
+						type: 'success',
+					});
+				}
 
-					if (showSuccessNotification) {
-						openToast({
-							message:
-								message ||
-								Liferay.Language.get('table-data-updated'),
-							type: 'success',
-						});
-					}
+				if (isMounted()) {
+					setLoading(false);
+					updateDataSetItems(data);
 
-					if (isMounted()) {
-						setLoading(false);
-						updateDataSetItems(data);
+					Liferay.fire(DATASET_DISPLAY_UPDATED, {id});
+				}
 
-						Liferay.fire(DATASET_DISPLAY_UPDATED, {id});
-					}
+				return data;
+			})
+			.catch((error) => {
+				logError(error);
+				setLoading(false);
 
-					return data;
-				})
-				.catch(() => setLoading(false));
-		},
-		[id, isMounted, requestData]
-	);
+				throw error;
+			});
+	}
 
 	useEffect(() => {
 		function handleRefreshFromTheOutside(event) {
@@ -347,16 +344,14 @@ function DataSetDisplay({
 	const view =
 		!loading && CurrentViewComponent ? (
 			<div className="data-set-display-content-wrapper">
-				{!formId && (
-					<input
-						hidden
-						name={`${namespace || id + '_'}${
-							actionParameterName ?? selectedItemsKey
-						}`}
-						readOnly
-						value={selectedItemsValue.join(',')}
-					/>
-				)}
+				<input
+					hidden
+					name={`${namespace || id + '_'}${
+						actionParameterName || selectedItemsKey
+					}`}
+					readOnly
+					value={selectedItemsValue.join(',')}
+				/>
 				{(items?.length ?? 0) || overrideEmptyResultView ? (
 					<CurrentViewComponent
 						dataSetDisplayContext={DataSetDisplayContext}
@@ -383,7 +378,6 @@ function DataSetDisplay({
 				<ClayPaginationBarWithBasicItems
 					activeDelta={delta}
 					activePage={pageNumber}
-					className="mb-2"
 					deltas={pagination.deltas}
 					ellipsisBuffer={3}
 					onDeltaChange={(deltaVal) => {
@@ -399,13 +393,15 @@ function DataSetDisplay({
 	function executeAsyncItemAction(url, method) {
 		return executeAsyncAction(url, method)
 			.then((_) => {
-				if (isMounted()) {
-					refreshData();
+				return delay(500).then(() => {
+					if (isMounted()) {
+						Liferay.fire(DATASET_ACTION_PERFORMED, {
+							id,
+						});
 
-					Liferay.fire(DATASET_ACTION_PERFORMED, {
-						id,
-					});
-				}
+						return refreshData();
+					}
+				});
 			})
 			.catch((error) => {
 				logError(error);
@@ -491,7 +487,7 @@ function DataSetDisplay({
 				{style === 'fluid' && (
 					<div className="data-set-display data-set-display-fluid">
 						{managementBar}
-						<div className="container mt-3">
+						<div className="container-fluid container-xl mt-3">
 							{wrappedView}
 							{paginationComponent}
 						</div>

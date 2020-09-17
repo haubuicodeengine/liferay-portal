@@ -34,24 +34,24 @@ public class CommerceProductTypeVirtualUpgradeStepRegistrator
 	public void register(Registry registry) {
 		if (_log.isInfoEnabled()) {
 			_log.info(
-				"COMMERCE PRODUCT TYPE VIRTUAL UPGRADE STEP REGISTRATOR " +
+				"Commerce product type virtual upgrade step registrator " +
 					"STARTED");
 		}
 
 		registry.register(
-			_SCHEMA_VERSION_1_0_0, _SCHEMA_VERSION_1_1_0,
-			new CPDefinitionVirtualSettingUpgradeProcess());
+			"1.0.0", "1.1.0", new CPDefinitionVirtualSettingUpgradeProcess());
+
+		registry.register(
+			"1.1.0", "1.1.1",
+			new com.liferay.commerce.product.type.virtual.internal.upgrade.
+				v1_1_1.CPDefinitionVirtualSettingUpgradeProcess());
 
 		if (_log.isInfoEnabled()) {
 			_log.info(
-				"COMMERCE PRODUCT TYPE VIRTUAL UPGRADE STEP REGISTRATOR " +
+				"Commerce product type virtual upgrade step registrator " +
 					"FINISHED");
 		}
 	}
-
-	private static final String _SCHEMA_VERSION_1_0_0 = "1.0.0";
-
-	private static final String _SCHEMA_VERSION_1_1_0 = "1.1.0";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CommerceProductTypeVirtualUpgradeStepRegistrator.class);

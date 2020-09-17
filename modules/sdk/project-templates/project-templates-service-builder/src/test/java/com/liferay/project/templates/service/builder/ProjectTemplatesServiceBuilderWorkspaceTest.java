@@ -173,10 +173,10 @@ public class ProjectTemplatesServiceBuilderWorkspaceTest
 
 			testContains(
 				gradleProjectDir, _name + "-api/build.gradle",
-				DEPENDENCY_RELEASE_PORTAL_API, "biz.aQute.bnd.annotation");
+				DEPENDENCY_PORTAL_KERNEL, "biz.aQute.bnd.annotation");
 			testContains(
 				gradleProjectDir, _name + "-service/build.gradle",
-				DEPENDENCY_RELEASE_PORTAL_API, "biz.aQute.bnd.annotation");
+				DEPENDENCY_PORTAL_KERNEL, "biz.aQute.bnd.annotation");
 
 			testNotContains(
 				gradleProjectDir, _name + "-api/build.gradle",
@@ -188,12 +188,10 @@ public class ProjectTemplatesServiceBuilderWorkspaceTest
 		else if (_liferayVersion.startsWith("7.2")) {
 			testContains(
 				gradleProjectDir, _name + "-api/build.gradle",
-				DEPENDENCY_RELEASE_PORTAL_API,
-				"org.osgi.annotation.versioning");
+				DEPENDENCY_PORTAL_KERNEL, "org.osgi.annotation.versioning");
 			testContains(
 				gradleProjectDir, _name + "-service/build.gradle",
-				DEPENDENCY_RELEASE_PORTAL_API,
-				"org.osgi.annotation.versioning");
+				DEPENDENCY_PORTAL_KERNEL, "org.osgi.annotation.versioning");
 
 			testNotContains(
 				gradleProjectDir, _name + "-api/build.gradle", "biz.aQute.bnd");
@@ -284,7 +282,7 @@ public class ProjectTemplatesServiceBuilderWorkspaceTest
 					executeGradle(
 						rootProject, _gradleDistribution,
 						projectPath + ":" + serviceProjectName +
-							_GRADLE_TASK_PATH_BUILD_SERVICE);
+							GRADLE_TASK_PATH_BUILD_SERVICE);
 
 					return null;
 				}
@@ -378,9 +376,6 @@ public class ProjectTemplatesServiceBuilderWorkspaceTest
 			"Changes in " + file + " incorrectly overridden", newContent,
 			FileUtil.read(path));
 	}
-
-	private static final String _GRADLE_TASK_PATH_BUILD_SERVICE =
-		":buildService";
 
 	private static URI _gradleDistribution;
 

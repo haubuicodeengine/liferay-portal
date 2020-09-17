@@ -41,6 +41,7 @@ import com.liferay.expando.kernel.util.ExpandoBridgeUtil;
 import com.liferay.exportimport.kernel.exception.ExportImportContentValidationException;
 import com.liferay.exportimport.kernel.lar.ExportImportThreadLocal;
 import com.liferay.friendly.url.model.FriendlyURLEntry;
+import com.liferay.friendly.url.model.FriendlyURLEntryLocalization;
 import com.liferay.friendly.url.service.FriendlyURLEntryLocalService;
 import com.liferay.info.item.InfoItemReference;
 import com.liferay.journal.configuration.JournalGroupServiceConfiguration;
@@ -1280,7 +1281,10 @@ public class JournalArticleLocalServiceImpl
 
 		// Expando
 
-		expandoRowLocalService.deleteRows(article.getId());
+		expandoRowLocalService.deleteRows(
+			article.getCompanyId(),
+			classNameLocalService.getClassNameId(JournalArticle.class),
+			article.getId());
 
 		// Trash
 
@@ -2014,12 +2018,13 @@ public class JournalArticleLocalServiceImpl
 		OrderByComparator<JournalArticle> orderByComparator =
 			new ArticleVersionComparator();
 
-		int[] statuses = {
-			WorkflowConstants.STATUS_APPROVED, WorkflowConstants.STATUS_IN_TRASH
-		};
-
 		List<JournalArticle> articles = journalArticlePersistence.findByR_I_S(
-			resourcePrimKey, true, statuses, 0, 1, orderByComparator);
+			resourcePrimKey, true,
+			new int[] {
+				WorkflowConstants.STATUS_APPROVED,
+				WorkflowConstants.STATUS_IN_TRASH
+			},
+			0, 1, orderByComparator);
 
 		if (articles.isEmpty()) {
 			return null;
@@ -4195,7 +4200,27 @@ public class JournalArticleLocalServiceImpl
 			article.setContent(content);
 		}
 
-		return journalArticlePersistence.update(article);
+		article = journalArticlePersistence.update(article);
+
+		FriendlyURLEntry friendlyURLEntry =
+			friendlyURLEntryLocalService.fetchFriendlyURLEntry(
+				article.getGroupId(), JournalArticle.class,
+				article.getUrlTitle());
+
+		if (friendlyURLEntry == null) {
+			return article;
+		}
+
+		FriendlyURLEntryLocalization friendlyURLEntryLocalization =
+			friendlyURLEntryLocalService.fetchFriendlyURLEntryLocalization(
+				friendlyURLEntry.getFriendlyURLEntryId(), languageId);
+
+		if (friendlyURLEntryLocalization != null) {
+			friendlyURLEntryLocalService.deleteFriendlyURLLocalizationEntry(
+				friendlyURLEntry.getFriendlyURLEntryId(), languageId);
+		}
+
+		return article;
 	}
 
 	/**
@@ -8900,11 +8925,14 @@ public class JournalArticleLocalServiceImpl
 
 		sb.append(layoutDisplayPageProvider.getURLSeparator());
 
-		for (String availableLanguageId : article.getAvailableLanguageIds()) {
-			String urlTitle = layoutDisplayPageObjectProvider.getURLTitle(
-				LocaleUtil.fromLanguageId(availableLanguageId));
+		Map<Locale, String> friendlyURLs = article.getFriendlyURLMap();
 
-			friendlyURLMap.put(availableLanguageId, sb.toString() + urlTitle);
+		for (Locale locale : friendlyURLs.keySet()) {
+			String urlTitle = layoutDisplayPageObjectProvider.getURLTitle(
+				locale);
+
+			friendlyURLMap.put(
+				LocaleUtil.toLanguageId(locale), sb.toString() + urlTitle);
 		}
 
 		return friendlyURLMap;

@@ -33,7 +33,7 @@ JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
 <aui:script require='<%= module + " as dataSetDisplay" %>'>
 	dataSetDisplay.default(
 		{
-			actionParameterName: '<%= actionParameterName %>',
+			actionParameterName: '<%= GetterUtil.getString(actionParameterName) %>',
 			activeViewSettings: <%= activeViewSettingsJSON %>,
 			apiURL: '<%= apiURL %>',
 			appURL: '<%= appURL %>',
@@ -41,29 +41,13 @@ JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
 			creationMenu: <%= jsonSerializer.serializeDeep(creationMenu) %>,
 			currentURL: '<%= PortalUtil.getCurrentURL(request) %>',
 			filters: <%= jsonSerializer.serializeDeep(clayDataSetFiltersContext) %>,
-			formId: '<%= formId %>',
+			formId: '<%= GetterUtil.getString(formId) %>',
 			id: '<%= id %>',
 			itemsActions: <%= jsonSerializer.serializeDeep(clayDataSetActionDropdownItems) %>,
 			namespace: '<%= namespace %>',
-
-			<%
-			if (Validator.isNotNull(nestedItemsKey)) {
-			%>
-
-				nestedItemsKey: '<%= nestedItemsKey %>',
-
-				<%
-				}
-
-				if (Validator.isNotNull(nestedItemsReferenceKey)) {
-				%>
-
-				nestedItemsReferenceKey: '<%= nestedItemsReferenceKey %>',
-
-			<%
-			}
-			%>
-
+			nestedItemsKey: '<%= GetterUtil.getString(nestedItemsKey) %>',
+			nestedItemsReferenceKey:
+				'<%= GetterUtil.getString(nestedItemsReferenceKey) %>',
 			pagination: {
 				deltas: <%= jsonSerializer.serializeDeep(clayPaginationEntries) %>,
 				initialDelta: <%= itemsPerPage %>,
@@ -72,12 +56,13 @@ JSONSerializer jsonSerializer = JSONFactoryUtil.createJSONSerializer();
 			portletId: '<%= portletDisplay.getRootPortletId() %>',
 			portletURL: '<%= portletURL %>',
 			selectedItems: <%= jsonSerializer.serializeDeep(selectedItems) %>,
-			selectedItemsKey: '<%= selectedItemsKey %>',
+			selectedItemsKey: '<%= GetterUtil.getString(selectedItemsKey) %>',
 			showManagementBar: <%= showManagementBar %>,
 			showSearch: <%= showSearch %>,
 			style: '<%= style %>',
-			selectionType: '<%= selectionType %>',
+			selectionType: '<%= GetterUtil.getString(selectionType) %>',
 			showPagination: <%= showPagination %>,
+			sorting: <%= jsonSerializer.serializeDeep(sortItemList) %>,
 			views: <%= jsonSerializer.serializeDeep(clayDataSetDisplayViewsContext) %>,
 		},
 		document.getElementById('<%= containerId %>')

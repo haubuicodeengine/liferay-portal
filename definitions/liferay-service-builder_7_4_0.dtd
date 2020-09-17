@@ -102,11 +102,27 @@ The name value specifies the name of the entity.
 >
 
 <!--
+The variable-name value specifies the variable name of the name. If none is
+specified, one will be generated from the name.
+-->
+<!ATTLIST entity
+	variable-name CDATA #IMPLIED
+>
+
+<!--
 The plural-name value specifies the plural form of the name. If none is
 specified, one will be generated from the name.
 -->
 <!ATTLIST entity
 	plural-name CDATA #IMPLIED
+>
+
+<!--
+The plural-variable-name value specifies the plural form of the variable name.
+If none is specified, one will be generated from the variable name.
+-->
+<!ATTLIST entity
+	plural-variable-name CDATA #IMPLIED
 >
 
 <!--
@@ -224,6 +240,15 @@ to "none" to disable transaction management.
 -->
 <!ATTLIST entity
 	tx-manager CDATA #IMPLIED
+>
+
+<!--
+The cache-enabled value specifies whether or not to cache this queries for this
+entity. Set this to false if data in the table will be updated by other
+programs. The default value is true.
+-->
+<!ATTLIST entity
+	cache-enabled CDATA #IMPLIED
 >
 
 <!--

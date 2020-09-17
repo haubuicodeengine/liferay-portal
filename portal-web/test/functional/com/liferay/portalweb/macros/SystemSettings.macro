@@ -1,15 +1,5 @@
 definition {
 
-	macro configureCrossClusterReplication {
-		FormFields.enableCheckbox(fieldName = "ccrEnabled");
-
-		FormFields.editTextMultiline(
-			fieldName = "ccrLocalClusterConnectionConfigurations",
-			fieldValue = "localhost:8080,${ccrLocalClusterConnectionID}");
-
-		SystemSettings.saveConfiguration();
-	}
-
 	macro configureDisplayStyle {
 		Click(locator1 = "Dropdown#TRIGGER");
 
@@ -44,6 +34,29 @@ definition {
 			Uncheck.uncheckToggleSwitch(locator1 = "SystemSettings#SETTING_FIELD_NAME_CHECKBOX");
 
 			SystemSettings.saveConfiguration();
+
+			AssertNotChecked.assertNotCheckedNotVisible(locator1 = "SystemSettings#SETTING_FIELD_NAME_CHECKBOX");
+		}
+	}
+
+	macro configureSystemSettingWithRefresh {
+		var key_settingFieldName = "${settingFieldName}";
+
+		if ("${enableSetting}" == "true") {
+			Check.toggleSwitch(locator1 = "SystemSettings#SETTING_FIELD_NAME_CHECKBOX");
+
+			SystemSettings.saveConfiguration();
+
+			Refresh();
+
+			AssertChecked.assertCheckedNotVisible(locator1 = "SystemSettings#SETTING_FIELD_NAME_CHECKBOX");
+		}
+		else if ("${enableSetting}" == "false") {
+			Uncheck.uncheckToggleSwitch(locator1 = "SystemSettings#SETTING_FIELD_NAME_CHECKBOX");
+
+			SystemSettings.saveConfiguration();
+
+			Refresh();
 
 			AssertNotChecked.assertNotCheckedNotVisible(locator1 = "SystemSettings#SETTING_FIELD_NAME_CHECKBOX");
 		}

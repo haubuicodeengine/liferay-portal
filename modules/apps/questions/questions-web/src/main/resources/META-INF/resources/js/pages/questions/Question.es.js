@@ -17,6 +17,7 @@ import ClayButton from '@clayui/button';
 import ClayForm from '@clayui/form';
 import ClayIcon from '@clayui/icon';
 import ClayNavigationBar from '@clayui/navigation-bar';
+import {ClayTooltipProvider} from '@clayui/tooltip';
 import classNames from 'classnames';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {withRouter} from 'react-router-dom';
@@ -224,12 +225,11 @@ export default withRouter(
 							<div className="col-md-10">
 								<div className="align-items-end flex-column-reverse flex-md-row row">
 									<div className="c-mt-4 c-mt-md-0 col-md-8">
-										{(question.messageBoardSection &&
+										{!!question.messageBoardSection &&
 											!!question.messageBoardSection
-												.numberOfMessageBoardSections) ||
-											(+context.rootTopicId === 0 && (
+												.numberOfMessageBoardSections && (
 												<Link
-													to={`/questions/${questionId}`}
+													to={`/questions/${sectionTitle}`}
 												>
 													<SectionLabel
 														section={
@@ -237,7 +237,7 @@ export default withRouter(
 														}
 													/>
 												</Link>
-											))}
+											)}
 
 										<h1
 											className={classNames(
@@ -296,16 +296,22 @@ export default withRouter(
 															setShowDeleteModalPanel
 														}
 													/>
-													<ClayButton
-														displayType="secondary"
-														onClick={() =>
-															setShowDeleteModalPanel(
-																true
-															)
-														}
-													>
-														<ClayIcon symbol="trash" />
-													</ClayButton>
+													<ClayTooltipProvider>
+														<ClayButton
+															data-tooltip-align="top"
+															displayType="secondary"
+															onClick={() =>
+																setShowDeleteModalPanel(
+																	true
+																)
+															}
+															title={Liferay.Language.get(
+																'delete'
+															)}
+														>
+															<ClayIcon symbol="trash" />
+														</ClayButton>
+													</ClayTooltipProvider>
 												</>
 											)}
 

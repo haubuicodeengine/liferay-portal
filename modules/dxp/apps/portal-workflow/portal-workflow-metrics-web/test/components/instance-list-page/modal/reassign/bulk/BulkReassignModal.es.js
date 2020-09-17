@@ -145,11 +145,11 @@ const ContainerMock = ({children}) => {
 				<ModalContext.Provider
 					value={{
 						bulkReassign,
+						closeModal: setVisibleModal,
 						processId,
 						selectTasks,
 						setBulkReassign,
 						setSelectTasks,
-						setVisibleModal,
 						visibleModal,
 					}}
 				>
@@ -161,7 +161,7 @@ const ContainerMock = ({children}) => {
 };
 
 describe('The BulkReassignModal component should', () => {
-	let getAllByTestId, getByTestId, renderResult;
+	let getAllByTestId, getAllByText, getByTestId, getByText, renderResult;
 
 	beforeAll(() => {
 		renderResult = render(<BulkReassignModal />, {
@@ -169,7 +169,9 @@ describe('The BulkReassignModal component should', () => {
 		});
 
 		getAllByTestId = renderResult.getAllByTestId;
+		getAllByText = renderResult.getAllByText;
 		getByTestId = renderResult.getByTestId;
+		getByText = renderResult.getByText;
 
 		jest.runAllTimers();
 	});
@@ -199,8 +201,7 @@ describe('The BulkReassignModal component should', () => {
 		const table = getByTestId('selectTaskStepTable');
 		const checkbox = getAllByTestId('itemCheckbox');
 		const checkAllButton = getByTestId('checkAllButton');
-		const processStepFilter = getByTestId('processStepFilter');
-		const assigneeFilter = getByTestId('assigneeFilter');
+		const assigneeFilter = getByText('assignee');
 
 		const content = modal.children[0].children[0];
 		const header = content.children[0];
@@ -210,7 +211,7 @@ describe('The BulkReassignModal component should', () => {
 		expect(stepBar.children[0]).toHaveTextContent('select-tasks');
 		expect(stepBar.children[1]).toHaveTextContent('step-x-of-x');
 
-		expect(processStepFilter).not.toBeUndefined();
+		expect(getAllByText('process-step').length).toBe(2);
 		expect(assigneeFilter).not.toBeUndefined();
 
 		expect(cancelBtn).toHaveTextContent('cancel');

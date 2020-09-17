@@ -87,6 +87,67 @@ definition {
 		}
 	}
 
+	@description = "Validate if the user can sort the tags."
+	@priority = "4"
+	test SortQuestionsTags {
+		JSONMBMessage.addCategory(
+			categoryDescription = "Description",
+			categoryName = "Questions Test Category",
+			userEmailAddress = "test@liferay.com");
+
+		for (var num : list "1,2") {
+			Questions.addQuestionByAPI(
+				bodyField = "Question Body ${num}",
+				categoryName = "Questions Test Category",
+				tagField = "tag1",
+				titleField = "Question ${num}");
+		}
+
+		Questions.addQuestionByAPI(
+			bodyField = "Question Body 3",
+			categoryName = "Questions Test Category",
+			tagField = "tag2",
+			titleField = "Question 3");
+
+		Navigator.gotoPage(pageName = "Questions Page");
+
+		Questions.gotoCategory(categoryName = "Questions Test Category");
+
+		Questions.gotoTab(questionTabField = "Tags");
+
+		Questions.viewTagsFilterResults(
+			position = "1",
+			tagName = "tag1",
+			usedTimes = "Used 2 Times");
+
+		Questions.viewTagsFilterResults(
+			position = "2",
+			tagName = "tag2",
+			usedTimes = "Used 1 Times");
+
+		Questions.configureTagsFilter(filterBy = "Latest Created");
+
+		Questions.viewTagsFilterResults(
+			position = "1",
+			tagName = "tag2");
+
+		Questions.viewTagsFilterResults(
+			position = "2",
+			tagName = "tag1");
+
+		Questions.configureTagsFilter(filterBy = "Number of Usages");
+
+		Questions.viewTagsFilterResults(
+			position = "1",
+			tagName = "tag1",
+			usedTimes = "Used 2 Times");
+
+		Questions.viewTagsFilterResults(
+			position = "2",
+			tagName = "tag2",
+			usedTimes = "Used 1 Times");
+	}
+
 	@description = "Validate if when the user click in the tag of the Tags tab, the user is redirected to the questions that use this tag"
 	@priority = "3"
 	test TagCardRedirectTheUserToTheQuestionsThatAreUsingThisTag {
@@ -120,7 +181,7 @@ definition {
 			locator1 = "Questions#ASK_QUESTION_SEARCH_QUESTION");
 	}
 
-	@description = "Validate if the user can search by tags in the tags search field"
+	@description = "This test covers LPS-119780. It ensures that the user can search by tags in the tags search field."
 	@priority = "4"
 	test ValidateSearchByQuestionTags {
 		JSONMBMessage.addCategory(
@@ -128,47 +189,76 @@ definition {
 			categoryName = "Question ValidateSearchByQuestionTags",
 			userEmailAddress = "test@liferay.com");
 
-		Questions.addQuestionByAPI(
-			bodyField = "Body ValidateSearchByQuestionTags",
-			categoryName = "Question ValidateSearchByQuestionTags",
-			tagField = "tagvalidatesearchbyquestiontags",
-			titleField = "Title ValidateSearchByQuestionTags");
+		for (var num : list "1,2,3") {
+			Questions.addQuestionByAPI(
+				bodyField = "Question Body ${num}",
+				categoryName = "Question ValidateSearchByQuestionTags",
+				tagField = "tag${num}",
+				titleField = "Question ${num}");
+		}
 
 		Navigator.gotoPage(pageName = "Questions Page");
 
-		Questions.gotoCategory(categoryName = "Question ValidateSearchByQuestionTags");
-
-		Pause(locator = "3000");
-
-		Click(
-			key_questionTabField = "Tags",
-			locator1 = "Questions#QUESTIONS_LIST_TAB_FIELD");
+		Questions.gotoTab(questionTabField = "Tags");
 
 		Questions.search(
-			searchKey = "tagvalidatesearchbyquestiontags",
+			searchKey = "tag1",
 			searchTag = "true");
 
 		Pause(locator = "3000");
 
-		Questions.viewTags(tagName = "tagvalidatesearchbyquestiontags");
+		Questions.viewTags(tagName = "tag1");
+
+		Questions.viewNoTags(tagsList = "tag2,tag3");
+
+		Click(locator1 = "Questions#SEARCH_RESULTS_CLEAR_BUTTON");
+
+		for (var tagName : list "tag1,tag2,tag3") {
+			Questions.viewTags(tagName = "${tagName}");
+		}
+
+		Questions.configureTagsFilter(filterBy = "Latest Created");
+
+		Questions.search(
+			searchKey = "tag2",
+			searchTag = "true");
+
+		Pause(locator = "3000");
+
+		Questions.viewTags(tagName = "tag2");
+
+		Questions.viewNoTags(tagsList = "tag1,tag3");
+
+		Click(locator1 = "Questions#SEARCH_RESULTS_CLEAR_BUTTON");
+
+		for (var tagName : list "tag1,tag2,tag3") {
+			Questions.viewTags(tagName = "${tagName}");
+		}
 	}
 
 	@description = "Validate if the Tags tab of the question portlet, the tags are ordered by occurrences"
 	@priority = "4"
 	test ValidateTagsOccurrences {
 		for (var num : list "1,2") {
-			JSONMBMessage.addCategory(
-				categoryDescription = "Description",
-				categoryName = "Question ValidateTagsOccurrences${num}",
-				userEmailAddress = "test@liferay.com");
+			Navigator.gotoPage(pageName = "Questions Page");
+
+			Questions.gotoTab(questionTabField = "Questions");
+
+			Questions.addRootTopic(
+				rootTopicDescription = "Description",
+				rootTopicName = "Question ValidateTagsOccurrences${num}");
 		}
 
+		Questions.gotoCategory(categoryName = "Question ValidateTagsOccurrences1");
+
 		for (var num : list "1,2") {
-			Questions.addQuestionByAPI(
-				bodyField = "${num}- Body ValidateTagsOccurrences",
-				categoryName = "Question ValidateTagsOccurrences1",
-				tagField = "tag1",
+			Questions.askQuestionFillingTheMandatoryFields(
+				contentField = "${num}- Body ValidateTagsOccurrences",
 				titleField = "${num}- Title ValidateTagsOccurrences");
+
+			Questions.addTags(tagLocator = "tag1");
+
+			Click(locator1 = "Questions#ASK_QUESTION_POST_YOUR_QUESTION_BUTTON");
 		}
 
 		Navigator.gotoPage(pageName = "Questions Page");
@@ -197,11 +287,9 @@ definition {
 
 		Click(locator1 = "Questions#ASK_QUESTION_POST_YOUR_QUESTION_BUTTON");
 
-		Questions.gotoTab(questionTabField = "Tags");
+		Navigator.gotoPage(pageName = "Questions Page");
 
-		Click(
-			key_questionTabField = "Tags",
-			locator1 = "Questions#QUESTIONS_LIST_TAB_FIELD");
+		Questions.gotoTab(questionTabField = "Tags");
 
 		Questions.viewTags(
 			amountOfUsedTimes = "3",

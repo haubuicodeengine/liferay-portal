@@ -259,6 +259,7 @@ public abstract class BaseEntityModelListener<T extends BaseModel<T>>
 		List<String> attributeNames = new ArrayList<>();
 
 		attributeNames.add("expando");
+		attributeNames.add("memberships");
 
 		for (String name : _userAttributeNames) {
 			if (ArrayUtil.contains(
@@ -607,8 +608,16 @@ public abstract class BaseEntityModelListener<T extends BaseModel<T>>
 
 			User user = userLocalService.fetchUser((long)associationClassPK);
 
-			if (isUserExcluded(user)) {
+			if (!eventType.equals("deleteAssociation") &&
+				isUserExcluded(user)) {
+
 				return;
+			}
+
+			if (!eventType.equals("deleteAssociation")) {
+				addAnalyticsMessage(
+					"update", getUserAttributeNames(user.getCompanyId()),
+					(T)user);
 			}
 
 			Map<String, Object> modelAttributes = model.getModelAttributes();

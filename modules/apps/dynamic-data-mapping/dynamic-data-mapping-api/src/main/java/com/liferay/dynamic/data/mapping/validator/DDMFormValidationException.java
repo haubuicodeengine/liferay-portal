@@ -162,7 +162,8 @@ public class DDMFormValidationException extends PortalException {
 		public MustSetOptionsForField(String fieldName) {
 			super(
 				String.format(
-					"At least one option must be set for field %s", fieldName));
+					"At least one option must be set for field name %s",
+					fieldName));
 
 			_fieldName = fieldName;
 		}
@@ -300,7 +301,7 @@ public class DDMFormValidationException extends PortalException {
 		public MustSetValidIndexType(String fieldName) {
 			super(
 				String.format(
-					"Invalid index type set for field %s", fieldName));
+					"Invalid index type set for field name %s", fieldName));
 
 			_fieldName = fieldName;
 		}
@@ -310,6 +311,23 @@ public class DDMFormValidationException extends PortalException {
 		}
 
 		private String _fieldName;
+
+	}
+
+	public static class MustSetValidType extends DDMFormValidationException {
+
+		public MustSetValidType(String fieldType) {
+			super(
+				String.format("Invalid type set for field type %s", fieldType));
+
+			_fieldType = fieldType;
+		}
+
+		public String getFieldType() {
+			return _fieldType;
+		}
+
+		private final String _fieldType;
 
 	}
 

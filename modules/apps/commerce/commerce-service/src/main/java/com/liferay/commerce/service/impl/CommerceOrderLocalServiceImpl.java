@@ -1157,6 +1157,7 @@ public class CommerceOrderLocalServiceImpl
 	}
 
 	@Indexable(type = IndexableType.REINDEX)
+	@Override
 	public CommerceOrder updateCommerceOrderExternalReferenceCode(
 			long commerceOrderId, String externalReferenceCode)
 		throws PortalException {
@@ -1770,10 +1771,10 @@ public class CommerceOrderLocalServiceImpl
 		}
 
 		searchContext.setCompanyId(companyId);
+		searchContext.setEnd(end);
 		searchContext.setGroupIds(new long[] {commerceChannelGroupId});
 		searchContext.setKeywords(keywords);
 		searchContext.setStart(start);
-		searchContext.setEnd(end);
 
 		Sort sort = SortFactoryUtil.getSort(
 			CommerceOrder.class, Sort.LONG_TYPE, Field.CREATE_DATE, "DESC");

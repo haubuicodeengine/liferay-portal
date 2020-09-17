@@ -125,10 +125,10 @@ public class EditCPDisplayLayoutMVCActionCommand extends BaseMVCActionCommand {
 
 		List<Long> classPKs = new ArrayList<>();
 
-		long classPKParam = ParamUtil.getLong(actionRequest, "classPK");
+		long classPK = ParamUtil.getLong(actionRequest, "classPK");
 
-		if (classPKParam > 0) {
-			classPKs.add(classPKParam);
+		if (classPK > 0) {
+			classPKs.add(classPK);
 		}
 		else {
 			Group companyGroup = _groupLocalService.getCompanyGroup(
@@ -139,12 +139,12 @@ public class EditCPDisplayLayoutMVCActionCommand extends BaseMVCActionCommand {
 					companyGroup.getGroupId(), false);
 
 			for (AssetVocabulary assetVocabulary : assetVocabularies) {
-				classPKParam = ParamUtil.getLong(
+				long assetVocabularyClassPK = ParamUtil.getLong(
 					actionRequest,
 					"classPK_" + assetVocabulary.getVocabularyId());
 
-				if (classPKParam > 0) {
-					classPKs.add(classPKParam);
+				if (assetVocabularyClassPK > 0) {
+					classPKs.add(assetVocabularyClassPK);
 				}
 			}
 		}
@@ -166,11 +166,11 @@ public class EditCPDisplayLayoutMVCActionCommand extends BaseMVCActionCommand {
 				throw new CPDisplayLayoutEntryException();
 			}
 
-			for (long classPK : classPKs) {
+			for (long curClassPK : classPKs) {
 				_cpDisplayLayoutService.addCPDisplayLayout(
 					_portal.getUserId(actionRequest),
 					commerceChannel.getSiteGroupId(), AssetCategory.class,
-					classPK, layoutUuid);
+					curClassPK, layoutUuid);
 			}
 		}
 	}

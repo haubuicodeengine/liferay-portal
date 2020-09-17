@@ -39,6 +39,7 @@ public class ChannelDTOConverter
 		return Channel.class.getSimpleName();
 	}
 
+	@Override
 	public Channel toDTO(DTOConverterContext dtoConverterContext)
 		throws Exception {
 
@@ -48,6 +49,9 @@ public class ChannelDTOConverter
 
 		return new Channel() {
 			{
+				currencyCode = commerceChannel.getCommerceCurrencyCode();
+				externalReferenceCode =
+					commerceChannel.getExternalReferenceCode();
 				id = commerceChannel.getCommerceChannelId();
 				name = commerceChannel.getName();
 				siteGroupId = commerceChannel.getSiteGroupId();

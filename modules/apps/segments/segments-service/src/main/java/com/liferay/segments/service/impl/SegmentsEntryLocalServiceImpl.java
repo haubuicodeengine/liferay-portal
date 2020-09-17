@@ -526,10 +526,16 @@ public class SegmentsEntryLocalServiceImpl
 		if (Validator.isNotNull(criteria)) {
 			Criteria criteriaObj = CriteriaSerializer.deserialize(criteria);
 
-			if (Validator.isNotNull(
-					criteriaObj.getFilterString(Criteria.Type.REFERRED))) {
+			String referredFilterString = criteriaObj.getFilterString(
+				Criteria.Type.REFERRED);
 
+			if (Validator.isNotNull(referredFilterString)) {
 				return SegmentsEntryConstants.SOURCE_REFERRED;
+			}
+			else if (SegmentsEntryConstants.SOURCE_REFERRED.equals(source) &&
+					 Validator.isNull(referredFilterString)) {
+
+				return SegmentsEntryConstants.SOURCE_DEFAULT;
 			}
 		}
 
@@ -586,13 +592,15 @@ public class SegmentsEntryLocalServiceImpl
 			Criteria.Criterion criterion = criteria.getCriterion(
 				SegmentsEntrySegmentsCriteriaContributor.KEY);
 
-			String filterString = criterion.getFilterString();
+			if (criterion != null) {
+				String filterString = criterion.getFilterString();
 
-			if (Validator.isNotNull(filterString) &&
-				filterString.contains(
-					String.valueOf(segmentsEntry.getSegmentsEntryId()))) {
+				if (Validator.isNotNull(filterString) &&
+					filterString.contains(
+						String.valueOf(segmentsEntry.getSegmentsEntryId()))) {
 
-				_reindexSegmentsEntryRels(referredSegmentsEntry);
+					_reindexSegmentsEntryRels(referredSegmentsEntry);
+				}
 			}
 		}
 	}

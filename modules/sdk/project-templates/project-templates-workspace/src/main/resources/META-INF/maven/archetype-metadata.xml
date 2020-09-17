@@ -12,12 +12,16 @@
 				<include>build.gradle</include>
 				<include>gradle.properties</include>
 				<include>gradle-local.properties</include>
+				<include>platform.bndrun</include>
 				<include>settings.gradle</include>
 			</includes>
 		</fileSet>
 	</fileSets>
 	<requiredProperties>
 		<requiredProperty key="liferayVersion">
+		</requiredProperty>
+		<requiredProperty key="product">
+			<defaultValue>portal</defaultValue>
 		</requiredProperty>
 	</requiredProperties>
 </archetype-descriptor>

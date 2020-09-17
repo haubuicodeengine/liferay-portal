@@ -22,87 +22,69 @@ import classNames from 'classnames';
 import {useEventListener} from 'frontend-js-react-web';
 import {fetch, navigate, openSelectionModal} from 'frontend-js-web';
 import PropTypes from 'prop-types';
-import React, {useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 
 import '../css/ApplicationsMenu.scss';
 
-const OPEN_MENU_TITLE_TPL =
+const getOpenMenuTooltip = (keyLabel) =>
 	`<div>${Liferay.Language.get('open-menu')}</div>` +
 	'<kbd class="c-kbd c-kbd-dark">' +
-	'<kbd class="c-kbd">⌘</kbd>' +
+	`<kbd class="c-kbd">${keyLabel}</kbd>` +
 	'<span class="c-kbd-separator">+</span>' +
 	'<kbd class="c-kbd">⇧</kbd>' +
 	'<span class="c-kbd-separator">+</span>' +
 	'<kbd class="c-kbd">M</kbd>' +
 	'</kbd>';
 
-const Environment = ({children, name}) => {
+const SitesPanel = ({portletNamespace, sites, virtualInstance}) => {
 	return (
-		<>
-			<li className="c-my-3">
-				<h2 className="applications-menu-nav-header">{name}</h2>
-			</li>
-
-			{children}
-		</>
-	);
-};
-
-const EnvironmentsPanel = ({portletNamespace, sites, virtualInstance}) => {
-	return (
-		<div className="applications-menu-environments c-p-3 c-px-md-4">
-			<h2 className="applications-menu-environments-label c-mt-2 c-mt-md-0">
-				{Liferay.Language.get('environments')}
+		<div className="applications-menu-sites c-p-3 c-px-md-4">
+			<h2 className="applications-menu-sites-label c-mt-2 c-mt-md-0 text-uppercase">
+				{Liferay.Language.get('sites')}
 			</h2>
 
-			<div className="c-my-2">
-				<ul className="list-unstyled">
+			<div className="c-mt-2">
+				<ul className="c-mb-0 list-unstyled">
 					{virtualInstance && (
-						<Environment
-							name={Liferay.Language.get('virtual-instance')}
-						>
-							<li className="applications-menu-virtual-instance c-mb-4 c-mt-3">
-								<a
-									className="applications-menu-nav-link"
-									href={virtualInstance.url}
-								>
-									<ClayLayout.ContentRow verticalAlign="center">
-										<ClayLayout.ContentCol>
-											<ClaySticker>
-												<img
-													alt=""
-													height="32px"
-													src={
-														virtualInstance.logoURL
-													}
-												/>
-											</ClaySticker>
-										</ClayLayout.ContentCol>
+						<li className="applications-menu-virtual-instance c-mt-2">
+							<a
+								className="applications-menu-nav-link"
+								href={virtualInstance.url}
+							>
+								<ClayLayout.ContentRow verticalAlign="center">
+									<ClayLayout.ContentCol>
+										<ClaySticker>
+											<img
+												alt=""
+												height="32px"
+												src={virtualInstance.logoURL}
+											/>
+										</ClaySticker>
+									</ClayLayout.ContentCol>
 
-										<ClayLayout.ContentCol className="applications-menu-shrink c-ml-2">
-											<span className="text-truncate">
-												{virtualInstance.label}
-											</span>
-										</ClayLayout.ContentCol>
-									</ClayLayout.ContentRow>
-								</a>
-							</li>
-						</Environment>
+									<ClayLayout.ContentCol className="applications-menu-shrink c-ml-2">
+										<span className="text-truncate">
+											{virtualInstance.label}
+										</span>
+									</ClayLayout.ContentCol>
+								</ClayLayout.ContentRow>
+							</a>
+						</li>
 					)}
 				</ul>
 			</div>
 
+			<div className="applications-menu-nav-divider c-my-3"></div>
+
 			<div className="applications-menu-sites c-my-2">
 				<ul className="list-unstyled">
 					{sites && (
-						<Environment name={Liferay.Language.get('sites')}>
-							<Sites
-								mySites={sites.mySites}
-								portletNamespace={portletNamespace}
-								recentSites={sites.recentSites}
-								viewAllURL={sites.viewAllURL}
-							/>
-						</Environment>
+						<Sites
+							mySites={sites.mySites}
+							portletNamespace={portletNamespace}
+							recentSites={sites.recentSites}
+							viewAllURL={sites.viewAllURL}
+						/>
 					)}
 				</ul>
 			</div>
@@ -179,9 +161,7 @@ const Sites = ({mySites, portletNamespace, recentSites, viewAllURL}) => {
 									navigate(selectedItem.url);
 								},
 								selectEventName: `${portletNamespace}selectSite`,
-								title: Liferay.Language.get(
-									'select-site-or-asset-library'
-								),
+								title: Liferay.Language.get('select-site'),
 								url: viewAllURL,
 							});
 						}}
@@ -343,7 +323,7 @@ const AppsPanel = ({
 							lg="3"
 							md="4"
 						>
-							<EnvironmentsPanel
+							<SitesPanel
 								portletNamespace={portletNamespace}
 								sites={sites}
 								virtualInstance={virtualInstance}
@@ -388,7 +368,7 @@ const AppsPanel = ({
 							lg="3"
 							md="4"
 						>
-							<div className="applications-menu-environments"></div>
+							<div className="applications-menu-sites"></div>
 						</ClayLayout.Col>
 					</ClayLayout.Row>
 				</ClayLayout.ContainerFluid>
@@ -410,6 +390,12 @@ const ApplicationsMenu = ({
 	const {observer, onClose} = useModal({
 		onClose: () => setVisible(false),
 	});
+
+	const buttonTitle = useMemo(() => {
+		const keyLabel = Liferay.Browser.isMac() ? '⌘' : 'Ctrl';
+
+		return getOpenMenuTooltip(keyLabel);
+	}, []);
 
 	useEventListener(
 		'keydown',
@@ -493,7 +479,7 @@ const ApplicationsMenu = ({
 				onMouseOver={fetchCategories}
 				small
 				symbol="grid"
-				title={OPEN_MENU_TITLE_TPL}
+				title={buttonTitle}
 			/>
 		</>
 	);

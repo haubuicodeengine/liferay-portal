@@ -163,6 +163,32 @@ public class ProductHelperImpl implements ProductHelper {
 	}
 
 	private PriceModel _getPriceModel(
+			CommerceMoney finalPriceCommerceMoney,
+			CommerceMoney unitPriceCommerceMoney,
+			CommerceMoney unitPromoPriceCommerceMoney,
+			CommerceDiscountValue commerceDiscountValue, Locale locale)
+		throws PortalException {
+
+		PriceModel priceModel = new PriceModel(
+			unitPriceCommerceMoney.format(locale));
+
+		if (!unitPromoPriceCommerceMoney.isEmpty()) {
+			BigDecimal unitPromoPrice = unitPromoPriceCommerceMoney.getPrice();
+
+			if ((unitPromoPrice.compareTo(BigDecimal.ZERO) > 0) &&
+				(unitPromoPrice.compareTo(unitPriceCommerceMoney.getPrice()) <
+					0)) {
+
+				priceModel.setPromoPrice(
+					unitPromoPriceCommerceMoney.format(locale));
+			}
+		}
+
+		return _updatePriceModelDiscount(
+			priceModel, commerceDiscountValue, finalPriceCommerceMoney, locale);
+	}
+
+	private PriceModel _getPriceModel(
 			long commerceChannelId, CommerceProductPrice commerceProductPrice,
 			Locale locale)
 		throws PortalException {
@@ -175,91 +201,43 @@ public class ProductHelperImpl implements ProductHelper {
 		if (priceDisplayType.equals(
 				CommercePricingConstants.TAX_EXCLUDED_FROM_PRICE)) {
 
-			CommerceMoney unitPriceMoney = commerceProductPrice.getUnitPrice();
+			return _getPriceModel(
+				commerceProductPrice.getFinalPrice(),
+				commerceProductPrice.getUnitPrice(),
+				commerceProductPrice.getUnitPromoPrice(),
+				commerceProductPrice.getDiscountValue(), locale);
+		}
 
-			PriceModel priceModel = new PriceModel(
-				unitPriceMoney.format(locale));
+		return _getPriceModel(
+			commerceProductPrice.getFinalPriceWithTaxAmount(),
+			commerceProductPrice.getUnitPriceWithTaxAmount(),
+			commerceProductPrice.getUnitPromoPriceWithTaxAmount(),
+			commerceProductPrice.getDiscountValueWithTaxAmount(), locale);
+	}
 
-			CommerceMoney unitPromoPriceMoney =
-				commerceProductPrice.getUnitPromoPrice();
+	private PriceModel _updatePriceModelDiscount(
+			PriceModel priceModel, CommerceDiscountValue commerceDiscountValue,
+			CommerceMoney finalPriceCommerceMoney, Locale locale)
+		throws PortalException {
 
-			BigDecimal unitPromoPrice = unitPromoPriceMoney.getPrice();
-
-			if ((unitPromoPrice != null) &&
-				(unitPromoPrice.compareTo(BigDecimal.ZERO) > 0) &&
-				(unitPromoPrice.compareTo(unitPriceMoney.getPrice()) < 0)) {
-
-				priceModel.setPromoPrice(unitPromoPriceMoney.format(locale));
-			}
-
-			CommerceDiscountValue discountValue =
-				commerceProductPrice.getDiscountValue();
-
-			if (discountValue != null) {
-				CommerceMoney discountAmount =
-					discountValue.getDiscountAmount();
-
-				priceModel.setDiscount(discountAmount.format(locale));
-
-				priceModel.setDiscountPercentage(
-					_commercePriceFormatter.format(
-						discountValue.getDiscountPercentage(), locale));
-
-				priceModel.setDiscountPercentages(
-					_getFormattedDiscountPercentages(
-						discountValue.getPercentages(), locale));
-
-				CommerceMoney finalPrice = commerceProductPrice.getFinalPrice();
-
-				priceModel.setFinalPrice(finalPrice.format(locale));
-			}
-
+		if (commerceDiscountValue == null) {
 			return priceModel;
 		}
 
-		CommerceMoney unitPriceWithTaxAmountMoney =
-			commerceProductPrice.getUnitPriceWithTaxAmount();
+		CommerceMoney discountAmount =
+			commerceDiscountValue.getDiscountAmount();
 
-		PriceModel priceModel = new PriceModel(
-			unitPriceWithTaxAmountMoney.format(locale));
+		priceModel.setDiscount(discountAmount.format(locale));
 
-		CommerceMoney unitPromoPriceWithTaxAmountMoney =
-			commerceProductPrice.getUnitPromoPriceWithTaxAmount();
+		priceModel.setDiscountPercentage(
+			_commercePriceFormatter.format(
+				commerceDiscountValue.getDiscountPercentage(), locale));
 
-		BigDecimal unitPromoPriceWithTaxAmount =
-			unitPromoPriceWithTaxAmountMoney.getPrice();
+		priceModel.setDiscountPercentages(
+			_getFormattedDiscountPercentages(
+				commerceDiscountValue.getPercentages(), locale));
 
-		BigDecimal unitPriceWithTax = unitPriceWithTaxAmountMoney.getPrice();
-
-		if ((unitPromoPriceWithTaxAmount != null) &&
-			(unitPromoPriceWithTaxAmount.compareTo(BigDecimal.ZERO) > 0) &&
-			(unitPromoPriceWithTaxAmount.compareTo(unitPriceWithTax) < 0)) {
-
-			priceModel.setPromoPrice(
-				unitPromoPriceWithTaxAmountMoney.format(locale));
-		}
-
-		CommerceDiscountValue discountValue =
-			commerceProductPrice.getDiscountValueWithTaxAmount();
-
-		if (discountValue != null) {
-			CommerceMoney discountAmount = discountValue.getDiscountAmount();
-
-			priceModel.setDiscount(discountAmount.format(locale));
-
-			priceModel.setDiscountPercentage(
-				_commercePriceFormatter.format(
-					discountValue.getDiscountPercentage(), locale));
-
-			priceModel.setDiscountPercentages(
-				_getFormattedDiscountPercentages(
-					discountValue.getPercentages(), locale));
-
-			CommerceMoney finalPriceWithTaxAmount =
-				commerceProductPrice.getFinalPriceWithTaxAmount();
-
-			priceModel.setFinalPrice(finalPriceWithTaxAmount.format(locale));
-		}
+		priceModel.setFinalPrice(finalPriceCommerceMoney.format(locale));
 
 		return priceModel;
 	}

@@ -19,10 +19,10 @@ import com.liferay.commerce.inventory.model.CommerceInventoryWarehouseItem;
 import com.liferay.commerce.inventory.service.CommerceInventoryWarehouseItemService;
 import com.liferay.commerce.inventory.service.CommerceInventoryWarehouseService;
 import com.liferay.commerce.product.constants.CPPortletKeys;
-import com.liferay.commerce.product.definitions.web.servlet.taglib.ui.CPDefinitionScreenNavigationConstants;
 import com.liferay.commerce.product.display.context.util.CPRequestHelper;
 import com.liferay.commerce.product.model.CPInstance;
 import com.liferay.commerce.product.service.CPInstanceService;
+import com.liferay.commerce.product.servlet.taglib.ui.CPDefinitionScreenNavigationConstants;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.dao.orm.QueryUtil;
@@ -117,11 +117,11 @@ public class CommerceInventoryWarehouseItemsDisplayContext {
 
 	public String getUpdateCommerceInventoryWarehouseItemTaglibOnClick(
 		long commerceInventoryWarehouseId,
-		long commerceInventoryWarehouseItemId, int index) {
+		long commerceInventoryWarehouseItemId, long mvccVersion, int index) {
 
 		RenderResponse renderResponse = _cpRequestHelper.getRenderResponse();
 
-		StringBundler sb = new StringBundler(10);
+		StringBundler sb = new StringBundler(12);
 
 		sb.append(renderResponse.getNamespace());
 		sb.append("updateCommerceInventoryWarehouseItem");
@@ -129,6 +129,8 @@ public class CommerceInventoryWarehouseItemsDisplayContext {
 		sb.append(commerceInventoryWarehouseId);
 		sb.append(StringPool.COMMA_AND_SPACE);
 		sb.append(commerceInventoryWarehouseItemId);
+		sb.append(StringPool.COMMA_AND_SPACE);
+		sb.append(mvccVersion);
 		sb.append(StringPool.COMMA_AND_SPACE);
 		sb.append(index);
 		sb.append(StringPool.CLOSE_PARENTHESIS);

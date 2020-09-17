@@ -192,7 +192,7 @@ public class CommerceAccountServiceImpl extends CommerceAccountServiceBaseImpl {
 				accountType = CommerceAccountConstants.ACCOUNT_TYPE_PERSONAL;
 			}
 			else if (commerceSiteType ==
-						CommerceAccountConstants.SITE_TYPE_B2C_B2B) {
+						CommerceAccountConstants.SITE_TYPE_B2X) {
 
 				accountType = -1;
 			}
@@ -264,7 +264,7 @@ public class CommerceAccountServiceImpl extends CommerceAccountServiceBaseImpl {
 				accountType = CommerceAccountConstants.ACCOUNT_TYPE_PERSONAL;
 			}
 			else if (commerceSiteType ==
-						CommerceAccountConstants.SITE_TYPE_B2C_B2B) {
+						CommerceAccountConstants.SITE_TYPE_B2X) {
 
 				accountType = -1;
 			}
@@ -324,6 +324,7 @@ public class CommerceAccountServiceImpl extends CommerceAccountServiceBaseImpl {
 	 * @deprecated As of Mueller (7.2.x), pass Default Billing/Shipping Ids
 	 */
 	@Deprecated
+	@Override
 	public CommerceAccount updateCommerceAccount(
 			long commerceAccountId, String name, boolean logo, byte[] logoBytes,
 			String email, String taxId, boolean active,

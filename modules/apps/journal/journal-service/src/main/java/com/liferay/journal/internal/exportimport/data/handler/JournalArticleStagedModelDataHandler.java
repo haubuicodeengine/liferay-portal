@@ -1004,6 +1004,13 @@ public class JournalArticleStagedModelDataHandler
 				serviceContext.getAssetLinkEntryIds(),
 				serviceContext.getAssetPriority());
 
+			if (article.isExpired() && !importedArticle.isExpired()) {
+				_journalArticleLocalService.expireArticle(
+					userId, importedArticle.getGroupId(),
+					importedArticle.getArticleId(),
+					importedArticle.getVersion(), articleURL, serviceContext);
+			}
+
 			serviceContext.setModifiedDate(importedArticle.getModifiedDate());
 
 			ServiceContextThreadLocal.pushServiceContext(serviceContext);

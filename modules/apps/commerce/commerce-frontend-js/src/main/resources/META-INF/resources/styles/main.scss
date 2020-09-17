@@ -5,10 +5,10 @@
 @import '../components/info_box/info_box';
 @import '../components/item_finder/item_finder';
 @import '../components/mini_cart/mini_cart';
-@import '../components/modal/modal';
+@import '../components/modal_content/modal_content';
 @import '../components/price/price';
 @import '../components/quantity_selector/quantity_selector';
-@import '../components/side_panel/side_panel';
+@import '../components/side_panel_content/side_panel_content';
 @import '../components/step_tracker/step_tracker';
 @import '../components/summary/summary';
 
@@ -47,6 +47,21 @@
 
 		@media screen and (min-width: 576px) {
 			top: 56px;
+		}
+	}
+
+	.separator-left {
+		margin-left: 36px;
+		padding-left: 16px;
+
+		&:before {
+			background-color: $border-color;
+			content: '';
+			height: 24px;
+			left: 0;
+			position: absolute;
+			top: 12px;
+			width: 1px;
 		}
 	}
 }
@@ -106,6 +121,11 @@
 
 .sticky-header-menu {
 	border-bottom: 1px solid $border-color;
+	padding-top: 5px;
 	position: sticky;
 	z-index: 899;
+
+	.navbar {
+		border-bottom: none;
+	}
 }

@@ -14,7 +14,6 @@
 
 package com.liferay.depot.web.internal.servlet.taglib;
 
-import com.liferay.depot.configuration.DepotConfiguration;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryService;
 import com.liferay.depot.web.internal.constants.DepotPortletKeys;
@@ -58,10 +57,6 @@ public class DepotBreadcrumbEntryContributorImpl
 	public List<BreadcrumbEntry> getBreadcrumbEntries(
 		List<BreadcrumbEntry> originalBreadcrumbEntries,
 		HttpServletRequest httpServletRequest) {
-
-		if (!_depotConfiguration.isEnabled()) {
-			return originalBreadcrumbEntries;
-		}
 
 		long depotEntryId = ParamUtil.getLong(
 			httpServletRequest, "depotEntryId");
@@ -217,9 +212,6 @@ public class DepotBreadcrumbEntryContributorImpl
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DepotBreadcrumbEntryContributorImpl.class);
-
-	@Reference
-	private DepotConfiguration _depotConfiguration;
 
 	@Reference
 	private DepotEntryService _depotEntryService;

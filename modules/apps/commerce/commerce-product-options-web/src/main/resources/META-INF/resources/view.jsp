@@ -20,13 +20,7 @@
 NPMResolver npmResolver = (NPMResolver)request.getAttribute("NPMResolver");
 
 String cpOptionsEditorRequire = npmResolver.resolveModuleName("commerce-product-options-web/CPOptionsEditor.es") + " as CPOptionsEditor";
-
-renderResponse.setTitle(LanguageUtil.get(request, "catalog"));
 %>
-
-<clay:navigation-bar
-	navigationItems="<%= CPNavigationItemRegistryUtil.getNavigationItems(renderRequest) %>"
-/>
 
 <%
 NavigationItem navigationItem = new NavigationItem();
@@ -37,6 +31,7 @@ navigationItem.setLabel(LanguageUtil.get(request, "option-templates"));
 %>
 
 <clay:navigation-bar
+	inverted="<%= false %>"
 	navigationItems="<%= Collections.singletonList(navigationItem) %>"
 />
 

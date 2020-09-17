@@ -301,20 +301,10 @@ definition {
 			collectionName = "Layout Elements",
 			fragmentName = "Container");
 
-		Click.clickNoWaitForVisible(
-			key_elementType = "Container",
-			key_position = "1",
-			locator1 = "PageEditor#LAYOUT_ELEMENTS_HEADER");
-
-		PageEditor.expandFragmentCollection(collectionName = "Layout Elements");
-
-		DragAndDrop.javaScriptDragAndDropToObject(
-			key_collectionName = "Layout Elements",
-			key_fragmentName = "Grid",
-			key_position = "1",
-			locator1 = "PageEditor#FRAGMENTS_AND_WIDGETS_TAB_FRAGMENT",
-			locator2 = "PageEditor#CONTAINER_CONTAINER",
-			value1 = "");
+		PageEditor.addElementToContainer(
+			collectionName = "Layout Elements",
+			fragmentName = "Grid",
+			navTab = "Fragments");
 
 		PageEditor.removeFragmentViaPageStructure(fragmentName = "Container");
 
@@ -330,8 +320,7 @@ definition {
 	@description = "This is a test for LPS-111946. Undo can bring deleted Collection Display with collection items back."
 	@priority = "3"
 	test UndoDeletedFragmentWithCollection {
-		property osgi.app.includes = "bookmarks";
-		property osgi.app.includes = "document-library-google-docs";
+		property osgi.app.includes = "bookmarks,document-library-google-docs";
 
 		for (var i : list "1,2,3") {
 			JSONWebcontent.addWebContent(
@@ -622,7 +611,9 @@ definition {
 			columnCount = "1",
 			position = "1");
 
-		Click(locator1 = "PageEditor#MANAGEMENT_BAR");
+		Click(
+			key_sidebarButton = "Selection",
+			locator1 = "PageEditor#FRAGMENT_SIDEBAR_TITLE");
 
 		PageEditor.editLayoutGrid(
 			columnCount = "2",

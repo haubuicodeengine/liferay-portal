@@ -78,7 +78,6 @@ const ContainerMock = ({children}) => {
 	const [updateDueDate, setUpdateDueDate] = useState({});
 	const processId = '12345';
 	const [selectAll, setSelectAll] = useState(false);
-	const [visibleModal, setVisibleModal] = useState('bulkUpdateDueDate');
 	const [selectTasks, setSelectTasks] = useState({
 		selectAll: false,
 		tasks: [],
@@ -102,9 +101,8 @@ const ContainerMock = ({children}) => {
 						selectTasks,
 						setSelectTasks,
 						setUpdateDueDate,
-						setVisibleModal,
 						updateDueDate,
-						visibleModal,
+						visibleModal: 'bulkUpdateDueDate',
 					}}
 				>
 					<ToasterProvider>{children}</ToasterProvider>
@@ -115,7 +113,7 @@ const ContainerMock = ({children}) => {
 };
 
 describe('The BulkReassignModal component should', () => {
-	let getAllByTestId, getByTestId, renderResult;
+	let getAllByTestId, getAllByText, getByTestId, getByText, renderResult;
 
 	beforeAll(() => {
 		renderResult = render(<BulkUpdateDueDateModal />, {
@@ -123,7 +121,9 @@ describe('The BulkReassignModal component should', () => {
 		});
 
 		getAllByTestId = renderResult.getAllByTestId;
+		getAllByText = renderResult.getAllByText;
 		getByTestId = renderResult.getByTestId;
+		getByText = renderResult.getByText;
 
 		jest.runAllTimers();
 	});
@@ -153,8 +153,7 @@ describe('The BulkReassignModal component should', () => {
 		const table = getByTestId('selectTaskStepTable');
 		const checkbox = getAllByTestId('itemCheckbox');
 		const checkAllButton = getByTestId('checkAllButton');
-		const processStepFilter = getByTestId('processStepFilter');
-		const assigneeFilter = getByTestId('assigneeFilter');
+		const assigneeFilter = getByText('assignee');
 
 		const content = modal.children[0].children[0];
 		const header = content.children[0];
@@ -164,7 +163,7 @@ describe('The BulkReassignModal component should', () => {
 		expect(stepBar.children[0]).toHaveTextContent('select-tasks');
 		expect(stepBar.children[1]).toHaveTextContent('step-x-of-x');
 
-		expect(processStepFilter).not.toBeUndefined();
+		expect(getAllByText('process-step').length).toBe(2);
 		expect(assigneeFilter).not.toBeUndefined();
 
 		expect(cancelBtn).toHaveTextContent('cancel');

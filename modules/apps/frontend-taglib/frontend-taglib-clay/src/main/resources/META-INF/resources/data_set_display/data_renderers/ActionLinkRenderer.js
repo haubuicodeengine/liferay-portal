@@ -14,6 +14,7 @@
 
 import ClayIcon from '@clayui/icon';
 import ClayLink from '@clayui/link';
+import {openToast} from 'frontend-js-web';
 import PropTypes from 'prop-types';
 import React, {useContext} from 'react';
 
@@ -41,12 +42,13 @@ function ActionLinkRenderer({actions, itemData, itemId, options, value}) {
 		return null;
 	}
 
-	if (currentAction.permissionKey) {
-		if (itemData.actions[currentAction.permissionKey]) {
+	if (currentAction.data?.permissionKey) {
+		if (itemData.actions[currentAction.data.permissionKey]) {
 			if (currentAction.target === 'headless') {
 				currentAction = {
 					...currentAction,
-					...itemData.actions[currentAction.id],
+					...itemData.actions[currentAction.data.id],
+					method: currentAction.method ?? currentAction.data?.method,
 				};
 			}
 		}
@@ -84,7 +86,16 @@ function ActionLinkRenderer({actions, itemData, itemId, options, value}) {
 		) {
 			event.preventDefault();
 
-			executeAsyncItemAction(formattedHref, currentAction.method);
+			executeAsyncItemAction(formattedHref, currentAction.method).then(
+				() => {
+					openToast({
+						message:
+							currentAction.data?.successMessage ||
+							Liferay.Language.get('action-completed'),
+						type: 'success',
+					});
+				}
+			);
 		}
 		else if (currentAction.onClick) {
 			event.preventDefault();
@@ -118,7 +129,11 @@ function ActionLinkRenderer({actions, itemData, itemId, options, value}) {
 ActionLinkRenderer.propTypes = {
 	actions: PropTypes.arrayOf(
 		PropTypes.shape({
-			disabled: PropTypes.bool,
+			data: PropTypes.shape({
+				method: PropTypes.oneOf(['get', 'delete']),
+				permissionKey: PropTypes.string,
+				successMessage: PropTypes.string,
+			}),
 			href: PropTypes.string,
 			icon: PropTypes.string,
 			method: PropTypes.oneOf(['get', 'delete']),

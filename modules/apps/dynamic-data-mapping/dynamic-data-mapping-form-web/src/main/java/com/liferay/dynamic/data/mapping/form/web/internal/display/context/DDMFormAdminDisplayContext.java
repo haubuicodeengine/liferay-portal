@@ -110,6 +110,7 @@ import com.liferay.taglib.servlet.PipingServletResponse;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -699,6 +700,43 @@ public class DDMFormAdminDisplayContext {
 		return ddmFormBuilderSettingsResponse.getFunctionsURL();
 	}
 
+	public String getInvalidDDMFormFieldType(DDMFormInstance ddmFormInstance) {
+		try {
+			String invalidDDMFormFieldType = _invalidDDMFormFieldTypes.get(
+				ddmFormInstance.getFormInstanceId());
+
+			if (invalidDDMFormFieldType != null) {
+				return invalidDDMFormFieldType;
+			}
+
+			DDMForm ddmForm = ddmFormInstance.getDDMForm();
+
+			for (DDMFormField ddmFormField : ddmForm.getDDMFormFields()) {
+				DDMFormFieldType ddmFormFieldType =
+					_ddmFormFieldTypeServicesTracker.getDDMFormFieldType(
+						ddmFormField.getType());
+
+				if (ddmFormFieldType == null) {
+					_invalidDDMFormFieldTypes.put(
+						ddmFormInstance.getFormInstanceId(),
+						ddmFormField.getType());
+
+					return ddmFormField.getType();
+				}
+			}
+
+			_invalidDDMFormFieldTypes.put(
+				ddmFormInstance.getFormInstanceId(), StringPool.BLANK);
+		}
+		catch (Exception exception) {
+			if (_log.isDebugEnabled()) {
+				_log.debug(exception, exception);
+			}
+		}
+
+		return null;
+	}
+
 	public DDMStructureVersion getLatestDDMStructureVersion()
 		throws PortalException {
 
@@ -1026,6 +1064,14 @@ public class DDMFormAdminDisplayContext {
 
 	public boolean hasResults() {
 		if (getTotalItems() > 0) {
+			return true;
+		}
+
+		return false;
+	}
+
+	public boolean hasValidDDMFormFields(DDMFormInstance ddmFormInstance) {
+		if (Validator.isNull(getInvalidDDMFormFieldType(ddmFormInstance))) {
 			return true;
 		}
 
@@ -1521,14 +1567,14 @@ public class DDMFormAdminDisplayContext {
 
 	private void _escape(
 		String languageId, String propertyName,
-		JSONObject serializedFormBuilderContext) {
+		JSONObject serializedFormBuilderContextJSONObject) {
 
-		if (!serializedFormBuilderContext.has(propertyName)) {
+		if (!serializedFormBuilderContextJSONObject.has(propertyName)) {
 			return;
 		}
 
-		JSONObject jsonObject = serializedFormBuilderContext.getJSONObject(
-			propertyName);
+		JSONObject jsonObject =
+			serializedFormBuilderContextJSONObject.getJSONObject(propertyName);
 
 		jsonObject.put(
 			languageId, HtmlUtil.escape(jsonObject.getString(languageId)));
@@ -1630,6 +1676,7 @@ public class DDMFormAdminDisplayContext {
 	private String _displayStyle;
 	private final FormInstancePermissionCheckerHelper
 		_formInstancePermissionCheckerHelper;
+	private final Map<Long, String> _invalidDDMFormFieldTypes = new HashMap<>();
 	private final NPMResolver _npmResolver;
 	private final Portal _portal;
 

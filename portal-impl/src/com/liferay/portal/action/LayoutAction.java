@@ -17,6 +17,8 @@ package com.liferay.portal.action;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.audit.AuditMessage;
 import com.liferay.portal.kernel.audit.AuditRouterUtil;
+import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.json.JSONUtil;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
 import com.liferay.portal.kernel.model.Layout;
@@ -303,12 +305,27 @@ public class LayoutAction implements Action {
 						AUDIT_MESSAGE_COM_LIFERAY_PORTAL_MODEL_LAYOUT_VIEW &&
 					AuditRouterUtil.isDeployed()) {
 
+					User realUser = themeDisplay.getRealUser();
 					User user = themeDisplay.getUser();
 
+					JSONObject additionalInfoJSONObject = null;
+
+					if (Validator.isNotNull(themeDisplay.getDoAsUserId()) &&
+						(realUser.getUserId() != user.getUserId())) {
+
+						additionalInfoJSONObject = JSONUtil.put(
+							"userId", user.getUserId()
+						).put(
+							"userName", user.getFullName()
+						);
+					}
+
 					AuditMessage auditMessage = new AuditMessage(
-						ActionKeys.VIEW, user.getCompanyId(), user.getUserId(),
-						user.getFullName(), Layout.class.getName(),
-						String.valueOf(layout.getPlid()));
+						ActionKeys.VIEW, realUser.getCompanyId(),
+						realUser.getUserId(), realUser.getFullName(),
+						Layout.class.getName(),
+						String.valueOf(layout.getPlid()), null,
+						additionalInfoJSONObject);
 
 					AuditRouterUtil.route(auditMessage);
 				}

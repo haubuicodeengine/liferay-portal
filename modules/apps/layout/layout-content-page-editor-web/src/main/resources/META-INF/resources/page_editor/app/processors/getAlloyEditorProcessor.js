@@ -18,6 +18,7 @@ import {config} from '../config/index';
 
 const KEY_ENTER = 13;
 const KEY_SPACE = 32;
+const KEY_SHIFT_ENTER = (window.CKEDITOR?.SHIFT ?? 0) + KEY_ENTER;
 
 const defaultGetEditorWrapper = (element) => {
 	const wrapper = document.createElement('div');
@@ -93,11 +94,7 @@ export default function getAlloyEditorProcessor(
 					changeLinkCallback
 				) => {
 					openSelectionModal({
-						onSelect: (selectedItem) => {
-							if (selectedItem) {
-								changeLinkCallback(selectedItem);
-							}
-						},
+						onSelect: changeLinkCallback,
 						selectEventName: editor.title + 'selectItem',
 						title: Liferay.Language.get('select-item'),
 						url,
@@ -127,7 +124,8 @@ export default function getAlloyEditorProcessor(
 			_eventHandlers = [
 				nativeEditor.on('key', (event) => {
 					if (
-						event.data.keyCode === KEY_ENTER &&
+						(event.data.keyCode === KEY_ENTER ||
+							event.data.keyCode === KEY_SHIFT_ENTER) &&
 						_element &&
 						(_element.getAttribute('type') === 'text' ||
 							_element.dataset.lfrEditableType === 'text')

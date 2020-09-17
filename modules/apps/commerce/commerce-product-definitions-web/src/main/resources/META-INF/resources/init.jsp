@@ -55,8 +55,6 @@ page import="com.liferay.commerce.product.definitions.web.internal.display.conte
 page import="com.liferay.commerce.product.definitions.web.internal.frontend.CommerceProductDataSetConstants" %><%@
 page import="com.liferay.commerce.product.definitions.web.internal.frontend.CommerceProductDisplayPageClayTable" %><%@
 page import="com.liferay.commerce.product.definitions.web.internal.security.permission.resource.CommerceCatalogPermission" %><%@
-page import="com.liferay.commerce.product.definitions.web.servlet.taglib.ui.CPDefinitionScreenNavigationConstants" %><%@
-page import="com.liferay.commerce.product.definitions.web.servlet.taglib.ui.CPInstanceScreenNavigationConstants" %><%@
 page import="com.liferay.commerce.product.exception.CPAttachmentFileEntryExpirationDateException" %><%@
 page import="com.liferay.commerce.product.exception.CPDefinitionExpirationDateException" %><%@
 page import="com.liferay.commerce.product.exception.CPDefinitionIgnoreSKUCombinationsException" %><%@
@@ -102,7 +100,8 @@ page import="com.liferay.commerce.product.model.CPTaxCategory" %><%@
 page import="com.liferay.commerce.product.model.CProduct" %><%@
 page import="com.liferay.commerce.product.model.CommerceCatalog" %><%@
 page import="com.liferay.commerce.product.model.CommerceChannel" %><%@
-page import="com.liferay.commerce.product.util.CPNavigationItemRegistryUtil" %><%@
+page import="com.liferay.commerce.product.servlet.taglib.ui.CPDefinitionScreenNavigationConstants" %><%@
+page import="com.liferay.commerce.product.servlet.taglib.ui.CPInstanceScreenNavigationConstants" %><%@
 page import="com.liferay.commerce.stock.activity.CommerceLowStockActivity" %><%@
 page import="com.liferay.document.library.kernel.exception.NoSuchFileEntryException" %><%@
 page import="com.liferay.dynamic.data.mapping.form.field.type.DDMFormFieldType" %><%@
@@ -148,4 +147,6 @@ page import="java.util.StringJoiner" %>
 
 <%
 String languageId = LanguageUtil.getLanguageId(locale);
+
+String redirect = ParamUtil.getString(request, "redirect");
 %>

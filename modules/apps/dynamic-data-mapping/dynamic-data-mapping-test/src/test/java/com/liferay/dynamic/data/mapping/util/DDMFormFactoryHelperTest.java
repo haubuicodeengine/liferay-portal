@@ -15,6 +15,7 @@
 package com.liferay.dynamic.data.mapping.util;
 
 import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderInputParametersSettings;
+import com.liferay.dynamic.data.mapping.data.provider.DDMDataProviderOutputParametersSettings;
 
 import java.lang.reflect.Method;
 
@@ -31,26 +32,43 @@ public class DDMFormFactoryHelperTest {
 
 	@Test
 	public void testGetNamesOfDDMDataProviderInputParametersSettings() {
-		DDMFormFactoryHelper ddmFormFactoryHelper = new DDMFormFactoryHelper(
+		_ddmFormFactoryHelper = new DDMFormFactoryHelper(
 			DDMDataProviderInputParametersSettings.class);
 
+		Assert.assertArrayEquals(
+			new String[] {
+				"inputParameterLabel", "inputParameterName",
+				"inputParameterType", "inputParameterRequired"
+			},
+			getNames());
+	}
+
+	@Test
+	public void testGetNamesOfDDMDataProviderOutputParametersSettings() {
+		_ddmFormFactoryHelper = new DDMFormFactoryHelper(
+			DDMDataProviderOutputParametersSettings.class);
+
+		Assert.assertArrayEquals(
+			new String[] {
+				"outputParameterId", "outputParameterName",
+				"outputParameterPath", "outputParameterType"
+			},
+			getNames());
+	}
+
+	protected String[] getNames() {
 		Collection<Method> ddmFormFieldMethods =
-			ddmFormFactoryHelper.getDDMFormFieldMethods();
+			_ddmFormFactoryHelper.getDDMFormFieldMethods();
 
 		Stream<Method> stream = ddmFormFieldMethods.stream();
 
-		String[] actualNames = stream.map(
+		return stream.map(
 			ddmFormFieldMethod -> ddmFormFieldMethod.getName()
 		).toArray(
 			String[]::new
 		);
-
-		String[] expectedNames = {
-			"inputParameterLabel", "inputParameterName", "inputParameterType",
-			"inputParameterRequired"
-		};
-
-		Assert.assertArrayEquals(expectedNames, actualNames);
 	}
+
+	private DDMFormFactoryHelper _ddmFormFactoryHelper;
 
 }

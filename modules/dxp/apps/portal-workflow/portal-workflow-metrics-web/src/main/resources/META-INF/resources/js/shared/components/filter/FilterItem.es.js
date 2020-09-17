@@ -21,6 +21,7 @@ const FilterItem = ({
 	multiple,
 	name,
 	onClick,
+	preventClick,
 	...otherProps
 }) => {
 	const [checked, setChecked] = useState(active);
@@ -32,7 +33,6 @@ const FilterItem = ({
 		),
 		dropdown: getClassName(
 			'dropdown-item',
-
 			checked && 'active',
 			description && 'with-description',
 			hideControl && 'control-hidden'
@@ -46,16 +46,15 @@ const FilterItem = ({
 
 	const onClickFilter = (event) => {
 		onClick(event);
-		setChecked(!checked);
+
+		if (!preventClick) {
+			setChecked(!checked);
+		}
 	};
 
 	return (
 		<>
-			<div
-				className={classes.dropdown}
-				data-testid="filterItem"
-				onClick={onClickFilter}
-			>
+			<div className={classes.dropdown} onClick={onClickFilter}>
 				<div className={classes.control}>
 					<input
 						checked={checked}
@@ -64,10 +63,7 @@ const FilterItem = ({
 					/>
 
 					<span className="custom-control-label">
-						<span
-							className="custom-control-label-text"
-							data-testid="filterItemName"
-						>
+						<span className="custom-control-label-text">
 							{otherProps[labelPropertyName] || name}
 						</span>
 

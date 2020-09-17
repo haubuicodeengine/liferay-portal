@@ -16,10 +16,33 @@ package com.liferay.commerce.application.list.constants;
 
 /**
  * @author Marco Leo
+ * @author Alessio Antonio Rendina
  */
 public class CommercePanelCategoryKeys {
 
-	public static final String CONTROL_PANEL_COMMERCE =
-		"control_panel.commerce";
+	public static final String COMMERCE = "commerce";
+
+	public static final String COMMERCE_INVENTORY_MANAGEMENT =
+		"commerce.inventory_management";
+
+	public static final String COMMERCE_ORDER_MANAGEMENT =
+		"commerce.order_management";
+
+	/**
+	 * @deprecated As of Athanasius (7.3.x)
+	 */
+	@Deprecated
+	public static final String COMMERCE_ORDERS_MANAGEMENT =
+		COMMERCE_ORDER_MANAGEMENT;
+
+	public static final String COMMERCE_PRICING = "commerce.pricing";
+
+	public static final String COMMERCE_PRODUCT_MANAGEMENT =
+		"commerce.product_management";
+
+	public static final String COMMERCE_SETTINGS = "commerce.settings";
+
+	public static final String COMMERCE_STORE_MANAGEMENT =
+		"commerce.store_management";
 
 }

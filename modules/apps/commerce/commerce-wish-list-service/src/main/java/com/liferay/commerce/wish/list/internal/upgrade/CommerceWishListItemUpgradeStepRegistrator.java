@@ -36,22 +36,18 @@ public class CommerceWishListItemUpgradeStepRegistrator
 	@Override
 	public void register(Registry registry) {
 		if (_log.isInfoEnabled()) {
-			_log.info("COMMERCE WISH LIST UPGRADE STEP REGISTRATOR STARTED");
+			_log.info("Commerce wish list upgrade step registrator started");
 		}
 
 		registry.register(
-			_SCHEMA_VERSION_1_0_0, _SCHEMA_VERSION_1_1_0,
+			"1.0.0", "1.1.0",
 			new CommerceWishListItemUpgradeProcess(
 				_cpDefinitionLocalService, _cpInstanceLocalService));
 
 		if (_log.isInfoEnabled()) {
-			_log.info("COMMERCE WISH LIST UPGRADE STEP REGISTRATOR FINISHED");
+			_log.info("Commerce wish list upgrade step registrator finished");
 		}
 	}
-
-	private static final String _SCHEMA_VERSION_1_0_0 = "1.0.0";
-
-	private static final String _SCHEMA_VERSION_1_1_0 = "1.1.0";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CommerceWishListItemUpgradeStepRegistrator.class);

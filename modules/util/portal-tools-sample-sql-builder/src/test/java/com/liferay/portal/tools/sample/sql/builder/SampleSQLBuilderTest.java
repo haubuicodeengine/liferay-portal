@@ -140,7 +140,7 @@ public class SampleSQLBuilderTest {
 			BenchmarksPropsKeys.MAX_COMMERCE_PRODUCT_DEFINITION_COUNT, "1");
 		properties.put(
 			BenchmarksPropsKeys.MAX_COMMERCE_PRODUCT_INSTANCE_COUNT, "1");
-		properties.put("PropsKeys.MAX_CONTENT_LAYOUT_COUNT", "1");
+		properties.put(BenchmarksPropsKeys.MAX_CONTENT_LAYOUT_COUNT, "1");
 		properties.put(BenchmarksPropsKeys.MAX_DDL_CUSTOM_FIELD_COUNT, "1");
 		properties.put(BenchmarksPropsKeys.MAX_DDL_RECORD_COUNT, "1");
 		properties.put(BenchmarksPropsKeys.MAX_DDL_RECORD_SET_COUNT, "1");
@@ -148,7 +148,7 @@ public class SampleSQLBuilderTest {
 		properties.put(BenchmarksPropsKeys.MAX_DL_FILE_ENTRY_SIZE, "1");
 		properties.put(BenchmarksPropsKeys.MAX_DL_FOLDER_COUNT, "1");
 		properties.put(BenchmarksPropsKeys.MAX_DL_FOLDER_DEPTH, "1");
-		properties.put(BenchmarksPropsKeys.MAX_GROUP_COUNT, "1");
+		properties.put(BenchmarksPropsKeys.MAX_GROUP_COUNT, "2");
 		properties.put(BenchmarksPropsKeys.MAX_JOURNAL_ARTICLE_COUNT, "1");
 		properties.put(BenchmarksPropsKeys.MAX_JOURNAL_ARTICLE_PAGE_COUNT, "1");
 		properties.put(BenchmarksPropsKeys.MAX_JOURNAL_ARTICLE_SIZE, "1");
@@ -165,9 +165,8 @@ public class SampleSQLBuilderTest {
 		properties.put(BenchmarksPropsKeys.OPTIMIZE_BUFFER_SIZE, "8192");
 		properties.put(
 			BenchmarksPropsKeys.OUTPUT_CSV_FILE_NAMES,
-			"assetPublisher,blog,company,cpFriendlyURLEntry,documentLibrary," +
-				"dynamicDataList,fragment,layout,mbCategory,mbThread," +
-					"repository,wiki");
+			"assetPublisher,blog,company,documentLibrary,dynamicDataList," +
+				"fragment,layout,mbCategory,mbThread,repository,wiki");
 		properties.put(BenchmarksPropsKeys.OUTPUT_DIR, outputDir);
 		properties.put(BenchmarksPropsKeys.OUTPUT_MERGE, "true");
 		properties.put(

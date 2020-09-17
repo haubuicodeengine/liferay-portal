@@ -47,11 +47,14 @@ import com.liferay.commerce.product.model.CommerceCatalog;
 import com.liferay.commerce.product.service.CommerceCatalogLocalService;
 import com.liferay.commerce.product.test.util.CPTestUtil;
 import com.liferay.commerce.test.util.TestCommerceContext;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.DataGuard;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -69,7 +72,6 @@ import java.util.Calendar;
 
 import org.frutilla.FrutillaRule;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -80,6 +82,7 @@ import org.junit.runner.RunWith;
 /**
  * @author Riccardo Alberti
  */
+@DataGuard(scope = DataGuard.Scope.NONE)
 @RunWith(Arquillian.class)
 public class CommercePricingTest {
 
@@ -91,9 +94,12 @@ public class CommercePricingTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_group = GroupTestUtil.addGroup();
+		_company = CompanyTestUtil.addCompany();
 
-		_user = UserTestUtil.addUser();
+		_user = UserTestUtil.addUser(_company);
+
+		_group = GroupTestUtil.addGroup(
+			_company.getCompanyId(), _user.getUserId(), 0);
 
 		_commerceAccount =
 			_commerceAccountLocalService.getPersonalCommerceAccount(
@@ -108,20 +114,7 @@ public class CommercePricingTest {
 			_group.getCompanyId());
 
 		_serviceContext = ServiceContextTestUtil.getServiceContext(
-			_user.getCompanyId(), _user.getGroupId(), _user.getUserId());
-	}
-
-	@After
-	public void tearDown() throws Exception {
-		_commerceAccountLocalService.deleteCommerceAccount(
-			_commerceAccount.getCommerceAccountId());
-
-		_commerceAccountGroupCommerceAccountRelLocalService.
-			deleteCommerceAccountGroupCommerceAccountRelByCAccountGroupId(
-				_commerceAccount.getCommerceAccountId());
-
-		_commerceAccountGroupLocalService.deleteCommerceAccountGroup(
-			_commerceAccountGroup.getCommerceAccountGroupId());
+			_company.getCompanyId(), _group.getGroupId(), _user.getUserId());
 	}
 
 	@Test
@@ -152,12 +145,12 @@ public class CommercePricingTest {
 
 		CPDefinition cpDefinition = cpInstance.getCPDefinition();
 
-		BigDecimal price = BigDecimal.valueOf(20);
+		BigDecimal price1 = BigDecimal.valueOf(20);
 
 		CommercePriceEntry commercePriceEntry =
 			CommercePriceEntryTestUtil.addCommercePriceEntry(
 				cpDefinition.getCProductId(), cpInstance.getCPInstanceUuid(),
-				commercePriceList.getCommercePriceListId(), "", price, false,
+				commercePriceList.getCommercePriceListId(), "", price1, false,
 				null, null, null, null, true, true);
 
 		BigDecimal price5 = BigDecimal.valueOf(15);
@@ -186,7 +179,7 @@ public class CommercePricingTest {
 		BigDecimal finalPrice = finalPriceMoney.getPrice();
 
 		Assert.assertEquals(
-			price.stripTrailingZeros(), finalPrice.stripTrailingZeros());
+			price1.stripTrailingZeros(), finalPrice.stripTrailingZeros());
 
 		quantity = 100;
 
@@ -440,20 +433,21 @@ public class CommercePricingTest {
 			cpDefinition.getCProductId(), cpInstance.getCPInstanceUuid(),
 			basePriceList.getCommercePriceListId(), "", price1);
 
-		CommercePriceModifier commercePriceModifier = _addCommercePriceModifier(
-			commercePriceList1.getGroupId(),
-			CommercePriceModifierConstants.TARGET_PRODUCT_GROUPS,
-			commercePriceList1.getCommercePriceListId(),
-			CommercePriceModifierConstants.MODIFIER_TYPE_PERCENTAGE,
-			BigDecimal.valueOf(-10), true);
+		CommercePriceModifier commercePriceModifier1 =
+			_addCommercePriceModifier(
+				commercePriceList1.getGroupId(),
+				CommercePriceModifierConstants.TARGET_PRODUCT_GROUPS,
+				commercePriceList1.getCommercePriceListId(),
+				CommercePriceModifierConstants.MODIFIER_TYPE_PERCENTAGE,
+				BigDecimal.valueOf(-10), true);
 
 		_commercePriceModifierRelLocalService.addCommercePriceModifierRel(
-			commercePriceModifier.getCommercePriceModifierId(),
+			commercePriceModifier1.getCommercePriceModifierId(),
 			CommercePricingClass.class.getName(),
 			commercePricingClass.getCommercePricingClassId(),
 			ServiceContextTestUtil.getServiceContext());
 
-		CommercePriceModifier commercePriceModifier1 =
+		CommercePriceModifier commercePriceModifier2 =
 			_addCommercePriceModifier(
 				commercePriceList1.getGroupId(),
 				CommercePriceModifierConstants.TARGET_CATEGORIES,
@@ -462,7 +456,7 @@ public class CommercePricingTest {
 				BigDecimal.valueOf(19), true);
 
 		_commercePriceModifierRelLocalService.addCommercePriceModifierRel(
-			commercePriceModifier1.getCommercePriceModifierId(),
+			commercePriceModifier2.getCommercePriceModifierId(),
 			AssetCategory.class.getName(), assetCategory.getCategoryId(),
 			ServiceContextTestUtil.getServiceContext());
 
@@ -589,12 +583,12 @@ public class CommercePricingTest {
 
 		CPDefinition cpDefinition = cpInstance.getCPDefinition();
 
-		BigDecimal price = BigDecimal.valueOf(50);
+		BigDecimal price1 = BigDecimal.valueOf(50);
 
 		CommercePriceEntry commercePriceEntry =
 			CommercePriceEntryTestUtil.addCommercePriceEntry(
 				cpDefinition.getCProductId(), cpInstance.getCPInstanceUuid(),
-				commercePriceList.getCommercePriceListId(), "", price, false,
+				commercePriceList.getCommercePriceListId(), "", price1, false,
 				null, null, null, null, true, true);
 
 		BigDecimal price5 = BigDecimal.valueOf(40);
@@ -621,7 +615,7 @@ public class CommercePricingTest {
 		BigDecimal finalPrice = finalPriceMoney.getPrice();
 
 		Assert.assertEquals(
-			price.setScale(_SCALE, RoundingMode.FLOOR),
+			price1.setScale(_SCALE, RoundingMode.FLOOR),
 			finalPrice.setScale(_SCALE, RoundingMode.FLOOR));
 
 		commerceProductPrice =
@@ -670,12 +664,12 @@ public class CommercePricingTest {
 
 		CPDefinition cpDefinition = cpInstance.getCPDefinition();
 
-		BigDecimal price = BigDecimal.valueOf(20);
+		BigDecimal price1 = BigDecimal.valueOf(20);
 		BigDecimal promoPrice = BigDecimal.valueOf(15);
 
 		CommercePriceEntryTestUtil.addCommercePriceEntry(
 			cpDefinition.getCProductId(), cpInstance.getCPInstanceUuid(),
-			commercePriceList.getCommercePriceListId(), "", price, false, null,
+			commercePriceList.getCommercePriceListId(), "", price1, false, null,
 			null, null, null, true, true);
 
 		CommercePriceEntry commercePromoEntry =
@@ -1136,8 +1130,9 @@ public class CommercePricingTest {
 	private CommerceProductPriceCalculation _commerceProductPriceCalculation;
 
 	@DeleteAfterTestRun
-	private Group _group;
+	private Company _company;
 
+	private Group _group;
 	private ServiceContext _serviceContext;
 
 	@DeleteAfterTestRun

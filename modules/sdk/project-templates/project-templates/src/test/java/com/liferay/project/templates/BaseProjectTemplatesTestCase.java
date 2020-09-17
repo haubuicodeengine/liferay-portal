@@ -139,6 +139,8 @@ public interface BaseProjectTemplatesTestCase {
 
 	public static final String GRADLE_TASK_PATH_BUILD = ":build";
 
+	public static final String GRADLE_TASK_PATH_BUILD_SERVICE = ":buildService";
+
 	public static final String GRADLE_TASK_PATH_DEPLOY = ":deploy";
 
 	public static final String[] GRADLE_WRAPPER_FILE_NAMES = {
@@ -823,11 +825,15 @@ public interface BaseProjectTemplatesTestCase {
 			String content = FileUtil.read(buildFilePath);
 
 			if (!content.contains("allprojects")) {
+				Path m2tmpPath = Paths.get(
+					System.getProperty("maven.repo.local") + "-tmp");
+
 				content +=
-					"allprojects {\n\trepositories {\n\t\tmavenLocal()\n\t}\n" +
-						"\tconfigurations.all {\n\t\tresolutionStrategy." +
-							"force 'javax.servlet:javax.servlet-api:3.0.1'" +
-								"\n\t}\n}";
+					"allprojects {\n\trepositories {\n\t\tmavenLocal()\n\t\t" +
+						"maven {\n\t\t\turl file(\"" + m2tmpPath +
+							"\").toURI()\n\t\t}\n\t}\n\tconfigurations.all {" +
+								"\n\t\tresolutionStrategy.force 'javax." +
+									"servlet:javax.servlet-api:3.0.1'\n\t}\n}";
 
 				Files.write(
 					buildFilePath, content.getBytes(StandardCharsets.UTF_8));
@@ -883,7 +889,7 @@ public interface BaseProjectTemplatesTestCase {
 
 		GradleRunner gradleRunner = GradleRunner.create();
 
-		List<String> arguments = new ArrayList<>(taskPaths.length + 5);
+		List<String> arguments = new ArrayList<>(taskPaths.length + 4);
 
 		String httpProxyHost =
 			ProjectTemplatesTest.mavenExecutor.getHttpProxyHost();
@@ -894,6 +900,8 @@ public interface BaseProjectTemplatesTestCase {
 			arguments.add("-Dhttp.proxyHost=" + httpProxyHost);
 			arguments.add("-Dhttp.proxyPort=" + httpProxyPort);
 		}
+
+		arguments.add("clean");
 
 		if (debug) {
 			arguments.add("--debug");
@@ -1196,8 +1204,18 @@ public interface BaseProjectTemplatesTestCase {
 			testExists(gradleProjectDir, "src/main/" + resourceFileName);
 		}
 
-		testContains(
-			gradleProjectDir, "build.gradle", DEPENDENCY_RELEASE_PORTAL_API);
+		if (liferayVersion.startsWith("7.0") ||
+			liferayVersion.startsWith("7.1") ||
+			liferayVersion.startsWith("7.2")) {
+
+			testContains(
+				gradleProjectDir, "build.gradle", DEPENDENCY_PORTAL_KERNEL);
+		}
+		else {
+			testContains(
+				gradleProjectDir, "build.gradle",
+				DEPENDENCY_RELEASE_PORTAL_API);
+		}
 
 		testNotContains(gradleProjectDir, "build.gradle", "version: \"[0-9].*");
 
@@ -1324,7 +1342,7 @@ public interface BaseProjectTemplatesTestCase {
 		if (isBuildProjects()) {
 			executeGradle(
 				workspaceDir, gradleDistribution,
-				":modules:" + name + ":build");
+				":modules:" + name + GRADLE_TASK_PATH_BUILD);
 
 			testExists(workspaceProjectDir, jarFilePath);
 		}
@@ -1350,12 +1368,11 @@ public interface BaseProjectTemplatesTestCase {
 		System.setOut(new PrintStream(newOutByteArrayOutputStream, true));
 
 		try (bnd bnd = new bnd()) {
-			String[] args = {
-				"diff", "--ignore", BUNDLES_DIFF_IGNORES,
-				bundleFile1.getAbsolutePath(), bundleFile2.getAbsolutePath()
-			};
-
-			bnd.start(args);
+			bnd.start(
+				new String[] {
+					"diff", "--ignore", BUNDLES_DIFF_IGNORES,
+					bundleFile1.getAbsolutePath(), bundleFile2.getAbsolutePath()
+				});
 		}
 		finally {
 			System.setErr(originalErrorPrintStream);

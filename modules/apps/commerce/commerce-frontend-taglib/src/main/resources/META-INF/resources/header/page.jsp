@@ -47,16 +47,7 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 
 					<div class="col">
 						<div class="row">
-
-							<%
-							String headerTitleWrapperCssClass = "col-auto";
-
-							if (Validator.isNotNull(thumbnailUrl)) {
-								headerTitleWrapperCssClass += " border-left";
-							}
-							%>
-
-							<div class="<%= headerTitleWrapperCssClass %>">
+							<div class="col-auto">
 								<h3 class="commerce-header-title mb-0 truncate-text">
 									<%= HtmlUtil.escape(title) %>
 								</h3>
@@ -75,7 +66,7 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 								</c:if>
 							</div>
 
-							<div class="border-left col d-flex flex-column justify-content-center">
+							<div class="col d-flex flex-column justify-content-center separator-left">
 								<c:if test="<%= Validator.isNotNull(beanIdLabel) %>">
 									<small class="d-block">
 										<span class="header-info-title">
@@ -86,7 +77,13 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 											<%= beanId %>
 										</strong>
 
-										<liferay-ui:icon-help message="identification-number" />
+										<clay:button
+											cssClass="lfr-portal-tooltip text-secondary"
+											displayType="unstyled"
+											icon="question-circle"
+											small="<%= true %>"
+											title='<%= LanguageUtil.get(request, "identification-number") %>'
+										/>
 									</small>
 								</c:if>
 
@@ -100,14 +97,21 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 											<%= externalReferenceCode %>
 										</strong>
 
-										<liferay-ui:icon-help message="external-reference-code" />
+										<clay:button
+											cssClass="lfr-portal-tooltip text-secondary"
+											displayType="unstyled"
+											icon="question-circle"
+											small="<%= true %>"
+											title='<%= LanguageUtil.get(request, "external-reference-code") %>'
+										/>
 
 										<c:if test="<%= Validator.isNotNull(externalReferenceCodeEditUrl) %>">
-											<clay:link
-												elementClasses="btn btn-link btn-unstyled header-info-link ml-3"
-												href="#"
+											<clay:button
+												cssClass="text-secondary"
+												displayType="unstyled"
+												icon="pencil"
 												id="erc-edit-modal-opener"
-												label='<%= LanguageUtil.get(request, "edit") %>'
+												small="<%= true %>"
 											/>
 
 											<aui:script require="commerce-frontend-js/utilities/eventsDefinitions as events">
@@ -134,14 +138,9 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 
 					<div class="col-auto d-lg-none">
 						<clay:button
-							data='<%=
-								HashMapBuilder.<String, String>put(
-									"target", "#navbarNavAltMarkup"
-								).put(
-									"toggle", "collapse"
-								).build()
-							%>'
-							elementClasses="navbar-toggler p-3"
+							cssClass="navbar-toggler"
+							data-target="#navbarNavAltMarkup"
+							data-toggle="liferay-collapse"
 							icon="bars"
 							style="secondary"
 							type="button"
@@ -174,7 +173,7 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 									<liferay-ui:message key="assigned-to" />:
 								</span>
 
-								<button aria-expanded="false" aria-haspopup="true" class="btn btn-default dropdown-toggle" data-toggle="dropdown" type="button">
+								<button aria-expanded="false" aria-haspopup="true" class="btn btn-secondary dropdown-toggle" data-toggle="dropdown" onclick="<portlet:namespace />toggleDropdown();" type="button">
 									<liferay-ui:message key="<%= assignee %>" />
 
 									<clay:icon
@@ -182,7 +181,7 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 									/>
 								</button>
 
-								<div class="dropdown-menu dropdown-menu-right">
+								<div class="dropdown-menu dropdown-menu-right" id="<portlet:namespace />commerce-dropdown-assigned-to">
 									<c:if test="<%= !assignedToCurrentUser %>">
 										<clay:button
 											elementClasses="dropdown-item transition-link"
@@ -258,6 +257,21 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 										function <%= myWorkflowTasksPortletNamespace %>refreshPortlet() {
 											window.location.reload();
 										}
+
+										Liferay.provide(window, '<portlet:namespace />toggleDropdown', function () {
+											var dropdownElement = window.document.querySelector(
+												'#<portlet:namespace />commerce-dropdown-assigned-to'
+											);
+
+											if (dropdownElement) {
+												if (dropdownElement.classList.contains('show')) {
+													dropdownElement.classList.remove('show');
+												}
+												else {
+													dropdownElement.classList.add('show');
+												}
+											}
+										});
 									</aui:script>
 								</div>
 							</small>
@@ -321,7 +335,7 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 					</c:if>
 
 					<c:if test="<%= Validator.isNotNull(dropdownItems) || Validator.isNotNull(previewUrl) %>">
-						<div class="align-items-center border-left col-auto d-flex pl-3">
+						<div class="align-items-center col-auto d-flex pl-3">
 							<c:if test="<%= Validator.isNotNull(dropdownItems) && (dropdownItems.size() > 0) %>">
 								<div id="dropdown-header-container">
 									<liferay-ui:icon
@@ -372,7 +386,13 @@ String myWorkflowTasksPortletNamespace = PortalUtil.getPortletNamespace(PortletK
 	if (pageHeader) {
 		pageHeader.classList.add('sticky-header-menu');
 		updateMenuDistanceFromTop();
-	}
+		window.addEventListener('resize', debouncedUpdateMenuDistanceFromTop);
 
-	window.addEventListener('resize', debouncedUpdateMenuDistanceFromTop);
+		Liferay.once('beforeNavigate', function () {
+			window.removeEventListener(
+				'resize',
+				debouncedUpdateMenuDistanceFromTop
+			);
+		});
+	}
 </aui:script>

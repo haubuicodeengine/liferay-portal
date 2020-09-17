@@ -34,24 +34,19 @@ public class CommerceProductTypeGroupedUpgradeStepRegistrator
 	public void register(Registry registry) {
 		if (_log.isInfoEnabled()) {
 			_log.info(
-				"COMMERCE PRODUCT TYPE GROUPED UPGRADE STEP REGISTRATOR " +
-					"STARTED");
+				"Commerce product type grouped upgrade step registrator " +
+					"'started'");
 		}
 
 		registry.register(
-			_SCHEMA_VERSION_1_0_0, _SCHEMA_VERSION_1_1_0,
-			new CPDefinitionGroupedEntryUpgradeProcess());
+			"1.0.0", "1.1.0", new CPDefinitionGroupedEntryUpgradeProcess());
 
 		if (_log.isInfoEnabled()) {
 			_log.info(
-				"COMMERCE PRODUCT TYPE GROUPED UPGRADE STEP REGISTRATOR " +
-					"FINISHED");
+				"Commerce product type grouped upgrade step registrator " +
+					"'finished'");
 		}
 	}
-
-	private static final String _SCHEMA_VERSION_1_0_0 = "1.0.0";
-
-	private static final String _SCHEMA_VERSION_1_1_0 = "1.1.0";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CommerceProductTypeGroupedUpgradeStepRegistrator.class);

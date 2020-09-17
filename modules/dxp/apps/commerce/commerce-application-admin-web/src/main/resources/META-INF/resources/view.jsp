@@ -18,11 +18,9 @@
 
 <%
 CommerceApplicationAdminDisplayContext commerceApplicationAdminDisplayContext = (CommerceApplicationAdminDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
-%>
 
-<clay:navigation-bar
-	navigationItems="<%= CPNavigationItemRegistryUtil.getNavigationItems(renderRequest) %>"
-/>
+renderResponse.setTitle(LanguageUtil.get(request, "applications"));
+%>
 
 <liferay-frontend:management-bar
 	includeCheckBox="<%= true %>"

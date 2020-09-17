@@ -34,10 +34,8 @@ import com.liferay.commerce.product.constants.CPPortletKeys;
 import com.liferay.commerce.product.model.CPDefinition;
 import com.liferay.commerce.product.model.CPDefinitionLocalizationModel;
 import com.liferay.commerce.product.model.CPDefinitionModel;
-import com.liferay.commerce.product.model.CPFriendlyURLEntryModel;
 import com.liferay.commerce.product.model.CPInstanceModel;
 import com.liferay.commerce.product.model.CPTaxCategoryModel;
-import com.liferay.commerce.product.model.CProduct;
 import com.liferay.commerce.product.model.CProductModel;
 import com.liferay.commerce.product.model.CommerceCatalog;
 import com.liferay.commerce.product.model.CommerceCatalogModel;
@@ -45,7 +43,6 @@ import com.liferay.commerce.product.model.CommerceChannel;
 import com.liferay.commerce.product.model.CommerceChannelModel;
 import com.liferay.commerce.product.model.impl.CPDefinitionLocalizationModelImpl;
 import com.liferay.commerce.product.model.impl.CPDefinitionModelImpl;
-import com.liferay.commerce.product.model.impl.CPFriendlyURLEntryModelImpl;
 import com.liferay.commerce.product.model.impl.CPInstanceModelImpl;
 import com.liferay.commerce.product.model.impl.CPTaxCategoryModelImpl;
 import com.liferay.commerce.product.model.impl.CProductModelImpl;
@@ -133,7 +130,6 @@ import com.liferay.layout.page.template.model.LayoutPageTemplateStructureModel;
 import com.liferay.layout.page.template.model.LayoutPageTemplateStructureRelModel;
 import com.liferay.layout.page.template.model.impl.LayoutPageTemplateStructureModelImpl;
 import com.liferay.layout.page.template.model.impl.LayoutPageTemplateStructureRelModelImpl;
-import com.liferay.layout.util.template.LayoutData;
 import com.liferay.login.web.constants.LoginPortletKeys;
 import com.liferay.message.boards.constants.MBCategoryConstants;
 import com.liferay.message.boards.constants.MBMessageConstants;
@@ -163,7 +159,6 @@ import com.liferay.petra.string.CharPool;
 import com.liferay.petra.string.StringBundler;
 import com.liferay.petra.string.StringPool;
 import com.liferay.portal.kernel.exception.PortalException;
-import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.metadata.RawMetadataProcessor;
 import com.liferay.portal.kernel.model.AccountModel;
 import com.liferay.portal.kernel.model.BaseModel;
@@ -193,8 +188,6 @@ import com.liferay.portal.kernel.model.Role;
 import com.liferay.portal.kernel.model.RoleModel;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.model.UserModel;
-import com.liferay.portal.kernel.model.UserNotificationDeliveryConstants;
-import com.liferay.portal.kernel.model.UserNotificationDeliveryModel;
 import com.liferay.portal.kernel.model.UserPersonalSite;
 import com.liferay.portal.kernel.model.VirtualHostModel;
 import com.liferay.portal.kernel.model.role.RoleConstants;
@@ -233,7 +226,6 @@ import com.liferay.portal.model.impl.ReleaseModelImpl;
 import com.liferay.portal.model.impl.ResourcePermissionModelImpl;
 import com.liferay.portal.model.impl.RoleModelImpl;
 import com.liferay.portal.model.impl.UserModelImpl;
-import com.liferay.portal.model.impl.UserNotificationDeliveryModelImpl;
 import com.liferay.portal.model.impl.VirtualHostModelImpl;
 import com.liferay.portal.upgrade.PortalUpgradeProcess;
 import com.liferay.portal.util.PropsValues;
@@ -335,7 +327,6 @@ public class DataFactory {
 
 		_accountId = _counter.get();
 		_companyId = _counter.get();
-		_defaultDDLDDMStructureVersionId = _counter.get();
 		_defaultDLDDMStructureId = _counter.get();
 		_defaultDLDDMStructureVersionId = _counter.get();
 		_defaultJournalDDMStructureId = _counter.get();
@@ -354,6 +345,8 @@ public class DataFactory {
 			"ddm_structure_basic_web_content.json");
 		_journalDDMStructureLayoutContent = _readFile(
 			"ddm_structure_layout_basic_web_content.json");
+		_layoutPageTemplateStructureRelData = _readFile(
+			"layout_page_template_structure_rel_data.json");
 
 		_defaultAssetPublisherPortletPreferencesImpl =
 			(PortletPreferencesImpl)_portletPreferencesFactory.fromDefaultXML(
@@ -1525,15 +1518,6 @@ public class DataFactory {
 			"Definition " + cpDefinitionModel.getCPDefinitionId());
 	}
 
-	public CPFriendlyURLEntryModel newCPFriendlyURLEntryModel(
-		CProductModel cProductModel) {
-
-		return newCPFriendlyURLEntryModel(
-			0, getClassNameId(CProduct.class), cProductModel.getCProductId(),
-			FriendlyURLNormalizerUtil.normalizeWithPeriodsAndSlashes(
-				"Definition " + cProductModel.getPublishedCPDefinitionId()));
-	}
-
 	public CPInstanceModel newCPInstanceModel(
 		CPDefinitionModel cpDefinitionModel,
 		GroupModel commerceCatalogGroupModel, int index) {
@@ -1987,8 +1971,7 @@ public class DataFactory {
 	public DDMStructureVersionModel newDDMStructureVersionModel(
 		DDMStructureModel ddmStructureModel) {
 
-		return newDDMStructureVersionModel(
-			ddmStructureModel, _defaultDDLDDMStructureVersionId);
+		return newDDMStructureVersionModel(ddmStructureModel, _counter.get());
 	}
 
 	public DDMStructureVersionModel newDDMStructureVersionModel(
@@ -2404,6 +2387,10 @@ public class DataFactory {
 		fragmentEntryModel.setJs(StringPool.BLANK);
 		fragmentEntryModel.setType(FragmentConstants.TYPE_COMPONENT);
 		fragmentEntryModel.setStatus(WorkflowConstants.STATUS_APPROVED);
+
+		// Autogenerated fields
+
+		fragmentEntryModel.setHeadId(_counter.get());
 
 		return fragmentEntryModel;
 	}
@@ -2883,10 +2870,12 @@ public class DataFactory {
 	}
 
 	public LayoutPageTemplateStructureRelModel
-		newLayoutPageTemplateStructureRelModel(
-			LayoutModel layoutModel,
-			LayoutPageTemplateStructureModel layoutPageTemplateStructureModel,
-			FragmentEntryLinkModel fragmentEntryLinkModel) {
+			newLayoutPageTemplateStructureRelModel(
+				LayoutModel layoutModel,
+				LayoutPageTemplateStructureModel
+					layoutPageTemplateStructureModel,
+				FragmentEntryLinkModel fragmentEntryLinkModel)
+		throws Exception {
 
 		LayoutPageTemplateStructureRelModel
 			layoutPageTemplateStructureRelModel =
@@ -2920,21 +2909,11 @@ public class DataFactory {
 			layoutPageTemplateStructureModel.
 				getLayoutPageTemplateStructureId());
 		layoutPageTemplateStructureRelModel.setSegmentsExperienceId(0L);
-
-		LayoutData layoutData = LayoutData.of(
-			layoutModel.toEscapedModel(),
-			layoutRow -> layoutRow.addLayoutColumns(
-				layoutColumn -> {
-					List<Long> fragmentEntryLinkIds =
-						layoutColumn.getFragmentEntryLinkIds();
-
-					fragmentEntryLinkIds.add(
-						fragmentEntryLinkModel.getFragmentEntryLinkId());
-				}));
-
-		JSONObject jsonObject = layoutData.getLayoutDataJSONObject();
-
-		layoutPageTemplateStructureRelModel.setData(jsonObject.toString());
+		layoutPageTemplateStructureRelModel.setData(
+			StringUtil.replace(
+				_layoutPageTemplateStructureRelData, "${fragmentEntryLinkId}",
+				String.valueOf(
+					fragmentEntryLinkModel.getFragmentEntryLinkId())));
 
 		return layoutPageTemplateStructureRelModel;
 	}
@@ -3726,32 +3705,6 @@ public class DataFactory {
 		return userModels;
 	}
 
-	public UserNotificationDeliveryModel newUserNotificationDeliveryModel(
-		String portletId) {
-
-		UserNotificationDeliveryModel userNotificationDeliveryModel =
-			new UserNotificationDeliveryModelImpl();
-
-		// PK fields
-
-		userNotificationDeliveryModel.setUserNotificationDeliveryId(
-			_counter.get());
-
-		// Audit fields
-
-		userNotificationDeliveryModel.setCompanyId(_companyId);
-		userNotificationDeliveryModel.setUserId(_sampleUserId);
-
-		// Other fields
-
-		userNotificationDeliveryModel.setPortletId(portletId);
-		userNotificationDeliveryModel.setDeliveryType(
-			UserNotificationDeliveryConstants.TYPE_WEBSITE);
-		userNotificationDeliveryModel.setDeliver(true);
-
-		return userNotificationDeliveryModel;
-	}
-
 	public GroupModel newUserPersonalSiteGroupModel() {
 		return newGroupModel(
 			_userPersonalSiteGroupId, getClassNameId(UserPersonalSite.class),
@@ -4145,43 +4098,6 @@ public class DataFactory {
 		blogsEntryModel.setStatusDate(new Date());
 
 		return blogsEntryModel;
-	}
-
-	protected CPFriendlyURLEntryModel newCPFriendlyURLEntryModel(
-		long groupId, long classNameId, long classPK, String urlTitle) {
-
-		CPFriendlyURLEntryModel cpFriendlyURLEntryModel =
-			new CPFriendlyURLEntryModelImpl();
-
-		// UUID
-
-		cpFriendlyURLEntryModel.setUuid(SequentialUUID.generate());
-
-		// PK fields
-
-		cpFriendlyURLEntryModel.setCPFriendlyURLEntryId(_counter.get());
-
-		// Group instance
-
-		cpFriendlyURLEntryModel.setGroupId(groupId);
-
-		// Audit fields
-
-		cpFriendlyURLEntryModel.setCompanyId(_companyId);
-		cpFriendlyURLEntryModel.setUserId(_sampleUserId);
-		cpFriendlyURLEntryModel.setUserName(_SAMPLE_USER_NAME);
-		cpFriendlyURLEntryModel.setCreateDate(new Date());
-		cpFriendlyURLEntryModel.setModifiedDate(new Date());
-
-		// Other fields
-
-		cpFriendlyURLEntryModel.setClassNameId(classNameId);
-		cpFriendlyURLEntryModel.setClassPK(classPK);
-		cpFriendlyURLEntryModel.setLanguageId("en_US");
-		cpFriendlyURLEntryModel.setUrlTitle(urlTitle);
-		cpFriendlyURLEntryModel.setMain(true);
-
-		return cpFriendlyURLEntryModel;
 	}
 
 	protected DDMContentModel newDDMContentModel(
@@ -4997,6 +4913,9 @@ public class DataFactory {
 				if (name.endsWith(StringPool.UNDERLINE)) {
 					name = name.substring(0, name.length() - 1);
 				}
+				else if (name.equals("DeliverySubTypeSettings")) {
+					name = "DeliverySubscriptionTypeSettings";
+				}
 				else if (name.equals("LPageTemplateStructureRelId")) {
 					name = "LayoutPageTemplateStructureRelId";
 				}
@@ -5115,7 +5034,6 @@ public class DataFactory {
 	private final PortletPreferencesImpl
 		_defaultAssetPublisherPortletPreferencesImpl;
 	private AssetVocabularyModel _defaultAssetVocabularyModel;
-	private final long _defaultDDLDDMStructureVersionId;
 	private final long _defaultDLDDMStructureId;
 	private final long _defaultDLDDMStructureVersionId;
 	private long _defaultDLFileEntryTypeId =
@@ -5139,6 +5057,7 @@ public class DataFactory {
 	private final String _journalDDMStructureLayoutContent;
 	private List<String> _lastNames;
 	private final Map<Long, SimpleCounter> _layoutCounters = new HashMap<>();
+	private final String _layoutPageTemplateStructureRelData;
 	private RoleModel _ownerRoleModel;
 	private RoleModel _powerUserRoleModel;
 	private final SimpleCounter _resourcePermissionCounter;

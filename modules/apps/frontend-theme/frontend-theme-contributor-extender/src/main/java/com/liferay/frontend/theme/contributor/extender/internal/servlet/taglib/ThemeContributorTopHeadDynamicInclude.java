@@ -63,6 +63,12 @@ public class ThemeContributorTopHeadDynamicInclude implements DynamicInclude {
 
 		String portalCDNURL = themeDisplay.getCDNBaseURL();
 
+		if (!_portal.isCDNDynamicResourcesEnabled(
+				themeDisplay.getCompanyId())) {
+
+			portalCDNURL = themeDisplay.getPortalURL();
+		}
+
 		if (_cssResourceURLs.length > 0) {
 			if (themeDisplay.isThemeCssFastLoad()) {
 				_renderComboCSS(

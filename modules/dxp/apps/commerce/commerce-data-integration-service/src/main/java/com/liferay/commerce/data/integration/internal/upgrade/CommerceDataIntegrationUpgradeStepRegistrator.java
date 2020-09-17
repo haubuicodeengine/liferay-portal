@@ -35,28 +35,22 @@ public class CommerceDataIntegrationUpgradeStepRegistrator
 	public void register(Registry registry) {
 		if (_log.isInfoEnabled()) {
 			_log.info(
-				"COMMERCE DATA INTEGRATION UPGRADE STEP REGISTRATOR STARTED");
+				"Commerce data integration upgrade step registrator started");
 		}
 
 		registry.register(
-			_SCHEMA_VERSION_1_0_0, _SCHEMA_VERSION_1_1_0,
+			"1.0.0", "1.1.0",
 			new CommerceDataIntegrationProcessLogUpgradeProcess());
 
 		registry.register(
-			_SCHEMA_VERSION_1_1_0, _SCHEMA_VERSION_2_0_0,
+			"1.1.0", "2.0.0",
 			new CommerceDataIntegrationProcessSystemUpgradeProcess());
 
 		if (_log.isInfoEnabled()) {
 			_log.info(
-				"COMMERCE DATA INTEGRATION UPGRADE STEP REGISTRATOR FINISHED");
+				"Commerce data integration upgrade step registrator finished");
 		}
 	}
-
-	private static final String _SCHEMA_VERSION_1_0_0 = "1.0.0";
-
-	private static final String _SCHEMA_VERSION_1_1_0 = "1.1.0";
-
-	private static final String _SCHEMA_VERSION_2_0_0 = "2.0.0";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CommerceDataIntegrationUpgradeStepRegistrator.class);

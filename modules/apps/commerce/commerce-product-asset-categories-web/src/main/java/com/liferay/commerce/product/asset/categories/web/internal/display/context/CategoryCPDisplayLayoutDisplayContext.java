@@ -14,10 +14,14 @@
 
 package com.liferay.commerce.product.asset.categories.web.internal.display.context;
 
-import com.liferay.commerce.product.definitions.web.display.context.BaseCPDefinitionsDisplayContext;
-import com.liferay.commerce.product.definitions.web.portlet.action.ActionHelper;
+import com.liferay.asset.kernel.model.AssetCategory;
+import com.liferay.asset.kernel.model.AssetVocabulary;
+import com.liferay.asset.kernel.service.AssetCategoryLocalService;
+import com.liferay.asset.kernel.service.AssetVocabularyServiceUtil;
+import com.liferay.commerce.product.display.context.BaseCPDefinitionsDisplayContext;
 import com.liferay.commerce.product.model.CPDisplayLayout;
 import com.liferay.commerce.product.model.CommerceChannel;
+import com.liferay.commerce.product.portlet.action.ActionHelper;
 import com.liferay.commerce.product.service.CPDisplayLayoutService;
 import com.liferay.commerce.product.service.CommerceChannelLocalService;
 import com.liferay.frontend.taglib.clay.servlet.taglib.util.CreationMenu;
@@ -39,6 +43,7 @@ import com.liferay.portal.kernel.portlet.RequestBackedPortletURLFactoryUtil;
 import com.liferay.portal.kernel.service.GroupLocalService;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.HtmlUtil;
+import com.liferay.portal.kernel.util.ListUtil;
 import com.liferay.portal.kernel.util.ParamUtil;
 import com.liferay.portal.kernel.util.Validator;
 import com.liferay.portal.kernel.util.WebKeys;
@@ -49,6 +54,7 @@ import java.util.Locale;
 
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -59,13 +65,16 @@ public class CategoryCPDisplayLayoutDisplayContext
 	extends BaseCPDefinitionsDisplayContext {
 
 	public CategoryCPDisplayLayoutDisplayContext(
-		ActionHelper actionHelper, HttpServletRequest httpServletRequest,
+		ActionHelper actionHelper,
+		AssetCategoryLocalService assetCategoryLocalService,
+		HttpServletRequest httpServletRequest,
 		CommerceChannelLocalService commerceChannelLocalService,
 		CPDisplayLayoutService cpDisplayLayoutService,
 		GroupLocalService groupLocalService, ItemSelector itemSelector) {
 
 		super(actionHelper, httpServletRequest);
 
+		_assetCategoryLocalService = assetCategoryLocalService;
 		_commerceChannelLocalService = commerceChannelLocalService;
 		_cpDisplayLayoutService = cpDisplayLayoutService;
 		_groupLocalService = groupLocalService;
@@ -82,6 +91,43 @@ public class CategoryCPDisplayLayoutDisplayContext
 		portletURL.setParameter(
 			"commerceChannelId", String.valueOf(getCommerceChannelId()));
 
+		portletURL.setWindowState(LiferayWindowState.POP_UP);
+
+		return portletURL.toString();
+	}
+
+	public AssetCategory getAssetCategory(long assetCategoryId)
+		throws PortalException {
+
+		return _assetCategoryLocalService.getAssetCategory(assetCategoryId);
+	}
+
+	public String getCategorySelectorURL(RenderResponse renderResponse)
+		throws Exception {
+
+		ThemeDisplay themeDisplay =
+			(ThemeDisplay)httpServletRequest.getAttribute(
+				WebKeys.THEME_DISPLAY);
+
+		PortletURL portletURL = PortletProviderUtil.getPortletURL(
+			httpServletRequest, AssetCategory.class.getName(),
+			PortletProvider.Action.BROWSE);
+
+		if (portletURL == null) {
+			return null;
+		}
+
+		List<AssetVocabulary> vocabularies =
+			AssetVocabularyServiceUtil.getGroupVocabularies(
+				themeDisplay.getCompanyGroupId());
+
+		portletURL.setParameter(
+			"eventName", renderResponse.getNamespace() + "selectCategory");
+		portletURL.setParameter("singleSelect", "true");
+		portletURL.setParameter(
+			"vocabularyIds",
+			ListUtil.toString(
+				vocabularies, AssetVocabulary.VOCABULARY_ID_ACCESSOR));
 		portletURL.setWindowState(LiferayWindowState.POP_UP);
 
 		return portletURL.toString();
@@ -122,10 +168,10 @@ public class CategoryCPDisplayLayoutDisplayContext
 	public CreationMenu getCreationMenu() throws Exception {
 		return CreationMenuBuilder.addDropdownItem(
 			dropdownItem -> {
-				dropdownItem.setTarget("sidePanel");
+				dropdownItem.setHref(getAddCategoryDisplayPageURL());
 				dropdownItem.setLabel(
 					LanguageUtil.get(httpServletRequest, "add-display-layout"));
-				dropdownItem.setHref(getAddCategoryDisplayPageURL());
+				dropdownItem.setTarget("sidePanel");
 			}
 		).build();
 	}
@@ -194,6 +240,7 @@ public class CategoryCPDisplayLayoutDisplayContext
 		return sb.toString();
 	}
 
+	@Override
 	public PortletURL getPortletURL() {
 		PortletURL portletURL = liferayPortletResponse.createRenderURL();
 
@@ -235,6 +282,7 @@ public class CategoryCPDisplayLayoutDisplayContext
 		return portletURL;
 	}
 
+	private final AssetCategoryLocalService _assetCategoryLocalService;
 	private final CommerceChannelLocalService _commerceChannelLocalService;
 	private CPDisplayLayout _cpDisplayLayout;
 	private final CPDisplayLayoutService _cpDisplayLayoutService;

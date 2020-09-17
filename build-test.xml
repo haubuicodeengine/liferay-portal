@@ -4806,10 +4806,15 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 
 			<parallel>
 				<daemons>
-					<exec dir="${test.app.server.bin.dir}" executable="${app.server.stop.executable}" output="app.server.log" resolveexecutable="true">
-						<arg line="${app.server.stop.executable.arg.line}" />
-						<env key="JAVA_HOME" path="${java.jdk.home}" />
-					</exec>
+					<beanshell>
+						<![CDATA[
+							import com.liferay.jenkins.results.parser.AppServer;
+
+							AppServer appServer = new AppServer(project);
+
+							appServer.stopService();
+						]]>
+					</beanshell>
 				</daemons>
 				<sequential>
 					<if>
@@ -6535,8 +6540,8 @@ go</echo>
 				<property location="${analytics.cloud.faro.data.csv}" name="analytics.cloud.faro.data.csv.file.path" />
 
 				<echo file="${app.server.parent.dir}/osgi/modules/com.liferay.analytics.demo.data.creator.configuration.AnalyticsDemoDataCreatorConfiguration.config">
-pathToUsersCSV=${analytics.cloud.faro.data.csv.file.path}
-virtualHostname=localhost
+pathToUsersCSV="${analytics.cloud.faro.data.csv.file.path}"
+virtualHostname="localhost"
 				</echo>
 
 				<print-file file.name="${app.server.parent.dir}/osgi/modules/com.liferay.analytics.demo.data.creator.configuration.AnalyticsDemoDataCreatorConfiguration.config" />
@@ -8449,8 +8454,6 @@ company.security.strangers.verify=false
 browser.launcher.url=
 
 setup.wizard.enabled=false
-
-buffered.increment.enabled=false
 
 mail.send.blacklist=
 
@@ -10569,6 +10572,46 @@ ANT_OPTS=${env.ANT_OPTS}</echo>
 				</if>
 
 				<delete file="liferay-portal-dependencies.zip" />
+
+				<if>
+					<or>
+						<matches pattern="file://" string="${test.build.portal.elasticsearch.zip.url}" />
+						<matches pattern="https?://" string="${test.build.portal.elasticsearch.zip.url}" />
+					</or>
+					<then>
+						<propertyregex
+							input="${test.build.portal.elasticsearch.zip.url}"
+							override="true"
+							property="test.build.portal.elasticsearch.zip.name"
+							regexp=".+/([^/]+)"
+							replace="\1"
+						/>
+
+						<mirrors-get
+							dest="${test.build.portal.elasticsearch.zip.name}"
+							src="${test.build.portal.elasticsearch.zip.url}"
+						/>
+
+						<tstamp>
+							<format pattern="yyyyMMddkkmmssSSS" property="tstamp.value" />
+						</tstamp>
+
+						<mkdir dir="${tstamp.value}" />
+
+						<decompress
+							dest="${tstamp.value}"
+							src="${test.build.portal.elasticsearch.zip.name}"
+						/>
+
+						<execute>
+							cp -r ${tstamp.value}/*/elasticsearch7 ${liferay.home}/
+						</execute>
+
+						<delete file="${test.build.portal.elasticsearch.zip.name}" />
+
+						<delete dir="${tstamp.value}" />
+					</then>
+				</if>
 
 				<mirrors-get
 					dest="liferay-portal-osgi.zip"

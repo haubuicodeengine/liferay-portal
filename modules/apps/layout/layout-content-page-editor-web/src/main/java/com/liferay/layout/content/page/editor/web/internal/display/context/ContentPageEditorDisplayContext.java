@@ -289,6 +289,19 @@ public class ContentPageEditorDisplayContext {
 				"defaultLanguageId",
 				LocaleUtil.toLanguageId(themeDisplay.getSiteDefaultLocale())
 			).put(
+				"defaultStyleBookEntryImagePreviewURL",
+				() -> {
+					StyleBookEntry defaultStyleBookEntry =
+						_getDefaultStyleBookEntry();
+
+					if (defaultStyleBookEntry != null) {
+						return defaultStyleBookEntry.getImagePreviewURL(
+							themeDisplay);
+					}
+
+					return StringPool.BLANK;
+				}
+			).put(
 				"defaultStyleBookEntryName",
 				() -> {
 					StyleBookEntry defaultStyleBookEntry =
@@ -1080,13 +1093,12 @@ public class ContentPageEditorDisplayContext {
 			allFragmentCollections.addAll(_getDynamicFragments());
 		}
 
-		long[] groupIds = {
-			themeDisplay.getCompanyGroupId(), getGroupId(),
-			CompanyConstants.SYSTEM
-		};
-
 		List<FragmentCollection> fragmentCollections =
-			FragmentCollectionServiceUtil.getFragmentCollections(groupIds);
+			FragmentCollectionServiceUtil.getFragmentCollections(
+				new long[] {
+					themeDisplay.getCompanyGroupId(), getGroupId(),
+					CompanyConstants.SYSTEM
+				});
 
 		for (FragmentCollection fragmentCollection : fragmentCollections) {
 			List<FragmentEntry> fragmentEntries =

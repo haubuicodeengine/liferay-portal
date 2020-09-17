@@ -1,7 +1,7 @@
 @component-name = "portal-change-list"
 definition {
 
-	property portal.release = "false";
+	property portal.release = "true";
 	property portal.upstream = "true";
 	property testray.main.component.name = "Change List";
 
@@ -68,7 +68,21 @@ definition {
 
 		Page.viewNoPG(pageName = "Test Page");
 
-		ChangeList.prepareToPublish(publicationName = "Publication Name");
+		ChangeList.gotoReviewChanges();
+
+		ChangeListChanges.viewChangesViaChangesStyle(
+			changeCategory = "Page",
+			changeSite = "Guest",
+			changeTitle = "Test Page",
+			changeType = "Deleted",
+			changeUser = "Test Test");
+
+		ChangeListChanges.viewChangesViaContextStyle(
+			changeCategory = "Page",
+			changeDescription = "Test Test deleted a Page in Guest",
+			changeTitle = "Test Page");
+
+		ChangeList.gotoPublish(publicationName = "Publication Name");
 
 		ChangeList.publishPublication(publicationName = "Publication Name");
 
@@ -135,7 +149,7 @@ definition {
 			webContentContent = "WC WebContent Content",
 			webContentTitle = "WC WebContent Title");
 
-		ChangeList.prepareToPublish(publicationName = "Publication Name");
+		ChangeList.gotoPublish(publicationName = "Publication Name");
 
 		ChangeList.publishPublication(publicationName = "Publication Name");
 
@@ -182,7 +196,7 @@ definition {
 
 		ChangeList.selectPublication(publicationName = "Publication Name");
 
-		ChangeList.prepareToPublish(publicationName = "Publication Name");
+		ChangeList.gotoPublish(publicationName = "Publication Name");
 
 		ChangeList.publishPublication(publicationName = "Publication Name");
 

@@ -124,14 +124,18 @@ public class ImageEditableElementParser implements EditableElementParser {
 
 			return GetterUtil.getString(jsonObject.getString("url"));
 		}
+		else if ((fieldValue instanceof String) &&
+				 Validator.isNotNull(fieldValue)) {
+
+			return GetterUtil.getString(fieldValue);
+		}
 		else if (fieldValue instanceof WebImage) {
 			WebImage webImage = (WebImage)fieldValue;
 
 			return GetterUtil.getString(webImage.getUrl());
 		}
-		else {
-			return StringPool.BLANK;
-		}
+
+		return StringPool.BLANK;
 	}
 
 	@Override

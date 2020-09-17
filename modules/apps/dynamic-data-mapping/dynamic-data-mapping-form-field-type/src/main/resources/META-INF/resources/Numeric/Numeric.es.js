@@ -13,6 +13,7 @@
  */
 
 import {ClayInput} from '@clayui/form';
+import {usePrevious} from 'frontend-js-react-web';
 import React, {useEffect, useRef, useState} from 'react';
 import createNumberMask from 'text-mask-addons/dist/createNumberMask';
 import vanillaTextMask from 'vanilla-text-mask';
@@ -40,7 +41,11 @@ const getMaskConfig = (dataType, symbols) => {
 
 const Numeric = ({
 	dataType = 'integer',
+	defaultLanguageId,
 	disabled,
+	editingLanguageId,
+	localizable,
+	localizedValue,
 	onChange,
 	symbols = {
 		decimalSymbol: '.',
@@ -52,13 +57,32 @@ const Numeric = ({
 	const [currentValue, setCurrentValue] = useState(value);
 	const inputRef = useRef(null);
 
+	const prevEditingLanguageId = usePrevious(editingLanguageId);
+
+	useEffect(() => {
+		if (prevEditingLanguageId !== editingLanguageId && localizable) {
+			const newValue =
+				localizedValue[editingLanguageId] !== undefined
+					? localizedValue[editingLanguageId]
+					: localizedValue[defaultLanguageId];
+			setCurrentValue(newValue);
+		}
+	}, [
+		defaultLanguageId,
+		editingLanguageId,
+		localizable,
+		localizedValue,
+		prevEditingLanguageId,
+		setCurrentValue,
+	]);
+
 	useEffect(() => {
 		let maskInstance = null;
 
-		if (inputRef.current && value) {
+		if (inputRef.current) {
 			let newValue = value;
 
-			if (dataType === 'integer') {
+			if (dataType === 'integer' && value) {
 				newValue = String(
 					Math.round(newValue.replace(symbols.decimalSymbol, '.'))
 				);
@@ -71,7 +95,7 @@ const Numeric = ({
 				mask,
 			});
 
-			if (newValue !== '') {
+			if (newValue !== inputRef.current.value) {
 				setCurrentValue(newValue);
 			}
 		}
@@ -110,7 +134,11 @@ const Numeric = ({
 
 const Main = ({
 	dataType,
+	defaultLanguageId,
+	editingLanguageId,
 	id,
+	localizable,
+	localizedValue = {},
 	name,
 	onBlur,
 	onChange,
@@ -122,11 +150,21 @@ const Main = ({
 	value,
 	...otherProps
 }) => (
-	<FieldBase {...otherProps} id={id} name={name} readOnly={readOnly}>
+	<FieldBase
+		{...otherProps}
+		id={id}
+		localizedValue={localizedValue}
+		name={name}
+		readOnly={readOnly}
+	>
 		<Numeric
 			dataType={dataType}
+			defaultLanguageId={defaultLanguageId}
 			disabled={readOnly}
+			editingLanguageId={editingLanguageId}
 			id={id ? id : name}
+			localizable={localizable}
+			localizedValue={localizedValue}
 			name={name}
 			onBlur={onBlur}
 			onChange={onChange}

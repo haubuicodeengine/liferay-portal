@@ -33,21 +33,21 @@
 				<dependencies>
 					<dependency>
 						<groupId>com.liferay.portal</groupId>
-						<artifactId>release.portal.bom</artifactId>
+						<artifactId>release.${product}.bom</artifactId>
 						<version>${liferay.bom.version}</version>
 						<type>pom</type>
 						<scope>import</scope>
 					</dependency>
 					<dependency>
 						<groupId>com.liferay.portal</groupId>
-						<artifactId>release.portal.bom.compile.only</artifactId>
+						<artifactId>release.${product}.bom.compile.only</artifactId>
 						<version>${liferay.bom.version}</version>
 						<type>pom</type>
 						<scope>import</scope>
 					</dependency>
 					<dependency>
 						<groupId>com.liferay.portal</groupId>
-						<artifactId>release.portal.bom.third.party</artifactId>
+						<artifactId>release.${product}.bom.third.party</artifactId>
 						<version>${liferay.bom.version}</version>
 						<type>pom</type>
 						<scope>import</scope>
@@ -66,12 +66,12 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
+#if (${liferayVersion.startsWith("7.0")} || ${liferayVersion.startsWith("7.1")} || ${liferayVersion.startsWith("7.2")})
 		<dependency>
 			<groupId>com.liferay.portal</groupId>
-			<artifactId>release.portal.api</artifactId>
+			<artifactId>com.liferay.portal.kernel</artifactId>
 			<scope>provided</scope>
 		</dependency>
-#if (${liferayVersion.startsWith("7.0")} || ${liferayVersion.startsWith("7.1")} || ${liferayVersion.startsWith("7.2")})
 		<dependency>
 			<groupId>javax.portlet</groupId>
 			<artifactId>portlet-api</artifactId>
@@ -87,34 +87,16 @@
 			<artifactId>org.osgi.service.component.annotations</artifactId>
 			<scope>provided</scope>
 		</dependency>
+#else
+		<dependency>
+			<groupId>com.liferay.portal</groupId>
+			<artifactId>release.${product}.api</artifactId>
+			<scope>provided</scope>
+		</dependency>
 #end
 	</dependencies>
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>biz.aQute.bnd</groupId>
-				<artifactId>bnd-maven-plugin</artifactId>
-				<version>@biz.aQute.bnd.version@</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>bnd-process</goal>
-						</goals>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>biz.aQute.bnd</groupId>
-						<artifactId>biz.aQute.bndlib</artifactId>
-						<version>@biz.aQute.bnd.version@</version>
-					</dependency>
-					<dependency>
-						<groupId>com.liferay</groupId>
-						<artifactId>com.liferay.ant.bnd</artifactId>
-						<version>@com.liferay.ant.bnd.version@</version>
-					</dependency>
-				</dependencies>
-			</plugin>
 			<plugin>
 				<groupId>com.liferay</groupId>
 				<artifactId>com.liferay.css.builder</artifactId>
@@ -152,6 +134,30 @@
 						<exclude>**/META-INF/resources/**/.sass-cache/</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>biz.aQute.bnd</groupId>
+				<artifactId>bnd-maven-plugin</artifactId>
+				<version>@biz.aQute.bnd.version@</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>bnd-process</goal>
+						</goals>
+					</execution>
+				</executions>
+				<dependencies>
+					<dependency>
+						<groupId>biz.aQute.bnd</groupId>
+						<artifactId>biz.aQute.bndlib</artifactId>
+						<version>@biz.aQute.bnd.version@</version>
+					</dependency>
+					<dependency>
+						<groupId>com.liferay</groupId>
+						<artifactId>com.liferay.ant.bnd</artifactId>
+						<version>@com.liferay.ant.bnd.version@</version>
+					</dependency>
+				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

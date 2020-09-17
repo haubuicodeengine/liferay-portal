@@ -56,6 +56,36 @@ definition {
 			titleField = "${titleField}");
 	}
 
+	macro addRootTopic {
+		if (IsElementPresent(locator1 = "Button#ANY", key_text = "New Topic")) {
+			Click(
+				key_text = "New Topic",
+				locator1 = "Button#ANY");
+		}
+		else {
+			Click(
+				key_card = "New Topic",
+				locator1 = "Card#CARD");
+		}
+
+		Type(
+			key_text = "Topic Name",
+			locator1 = "TextInput#ANY",
+			value1 = "${rootTopicName}");
+
+		Type(
+			key_label = "Description",
+			locator1 = "TextArea#ANY_LABELED",
+			value1 = "${rootTopicDescription}");
+
+		Button.click(button = "Create");
+
+		AssertTextEquals(
+			key_card = "${rootTopicName}",
+			locator1 = "Card#CARD_TITLE",
+			value1 = "${rootTopicName}");
+	}
+
 	macro addSubTopic {
 		Click(locator1 = "Questions#NEW_TOPIC");
 
@@ -272,7 +302,7 @@ definition {
 			key_questionTabField = "${questionTabField}",
 			locator1 = "Questions#QUESTIONS_LIST_TAB_FIELD");
 
-		AssertElementPresent(
+		AssertVisible(
 			key_questionTabField = "${questionTabField}",
 			locator1 = "Questions#QUESTIONS_LIST_ACTIVE_TAB_FIELD");
 	}
@@ -377,6 +407,14 @@ definition {
 		}
 	}
 
+	macro viewNoTags {
+		for (var tagName : list "${tagsList}") {
+			AssertElementNotPresent(
+				key_tagName = "${tagName}",
+				locator1 = "Questions#TAGS_LIST_TAB_NAMES");
+		}
+	}
+
 	macro viewPaginationResults {
 		AssertTextEquals(
 			locator1 = "Questions#PAGINATION_RESULTS",
@@ -437,6 +475,26 @@ definition {
 				key_amountOfUsedTimes = "${amountOfUsedTimes}",
 				key_tagName = "${tagName}",
 				locator1 = "Questions#TAGS_LIST_TAB_USED_TIMES");
+		}
+	}
+
+	macro viewTagsFilterResults {
+		AssertTextEquals.assertPartialText(
+			key_position = "${position}",
+			locator1 = "Questions#TAGS_POSITION",
+			value1 = "${tagName}");
+
+		if (isSet(usedTimes)) {
+			AssertTextEquals.assertPartialText(
+				key_position = "${position}",
+				locator1 = "Questions#TAGS_POSITION",
+				value1 = "${usedTimes}");
+		}
+		else {
+			AssertTextEquals.assertPartialText(
+				key_position = "${position}",
+				locator1 = "Questions#TAGS_POSITION",
+				value1 = "Created");
 		}
 	}
 

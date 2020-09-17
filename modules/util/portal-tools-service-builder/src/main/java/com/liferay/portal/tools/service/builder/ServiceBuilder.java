@@ -5828,7 +5828,7 @@ public class ServiceBuilder {
 			javaAnnotationsMap.put(javaAnnotation.getType(), javaAnnotation);
 		}
 
-		List<JavaAnnotation> javaAnnotations = new ArrayList<>(
+		List<JavaAnnotation> javaAnnotations3 = new ArrayList<>(
 			javaAnnotationsMap.values());
 
 		Comparator<JavaAnnotation> comparator =
@@ -5848,9 +5848,9 @@ public class ServiceBuilder {
 
 			};
 
-		Collections.sort(javaAnnotations, comparator);
+		Collections.sort(javaAnnotations3, comparator);
 
-		return javaAnnotations;
+		return javaAnnotations3;
 	}
 
 	private List<JavaMethod> _mergeMethods(
@@ -5887,7 +5887,7 @@ public class ServiceBuilder {
 			}
 		}
 
-		List<JavaMethod> javaMethods = new ArrayList<>(javaMethodMap.values());
+		List<JavaMethod> javaMethods3 = new ArrayList<>(javaMethodMap.values());
 
 		Comparator<JavaMethod> comparator = new Comparator<JavaMethod>() {
 
@@ -5908,9 +5908,9 @@ public class ServiceBuilder {
 
 		};
 
-		Collections.sort(javaMethods, comparator);
+		Collections.sort(javaMethods3, comparator);
 
-		return javaMethods;
+		return javaMethods3;
 	}
 
 	private List<Entity> _mergeReferenceEntities(Entity entity) {
@@ -5933,7 +5933,10 @@ public class ServiceBuilder {
 	private Entity _parseEntity(Element entityElement) throws Exception {
 		String entityName = entityElement.attributeValue("name");
 		String humanName = entityElement.attributeValue("human-name");
+		String variableName = entityElement.attributeValue("variable-name");
 		String pluralName = entityElement.attributeValue("plural-name");
+		String pluralVariableName = entityElement.attributeValue(
+			"plural-variable-name");
 
 		String tableName = entityElement.attributeValue("table");
 
@@ -6019,18 +6022,8 @@ public class ServiceBuilder {
 		String dataSource = entityElement.attributeValue("data-source");
 		String sessionFactory = entityElement.attributeValue("session-factory");
 		String txManager = entityElement.attributeValue("tx-manager");
-
 		boolean cacheEnabled = GetterUtil.getBoolean(
 			entityElement.attributeValue("cache-enabled"), true);
-
-		if (_dtdVersion.isSameVersionAs("7.3.0") && !cacheEnabled) {
-			System.out.println(
-				StringBundler.concat(
-					"Warning: The attribute cache-enabled is set to false for ",
-					"entity ", entityName, ". This attribute is ignored in ",
-					"7.3.0 and will be removed in 7.4.0."));
-		}
-
 		boolean changeTrackingEnabled = GetterUtil.getBoolean(
 			entityElement.attributeValue("change-tracking-enabled"),
 			_changeTrackingEnabled);
@@ -6672,15 +6665,15 @@ public class ServiceBuilder {
 
 		Entity entity = new Entity(
 			this, _packagePath, _apiPackagePath, _portletShortName, entityName,
-			pluralName, humanName, tableName, alias, uuid, uuidAccessor,
-			externalReferenceCode, localService, remoteService, persistence,
-			persistenceClassName, finderClassName, dataSource, sessionFactory,
-			txManager, cacheEnabled, changeTrackingEnabled,
-			dynamicUpdateEnabled, jsonEnabled, mvccEnabled, trashEnabled,
-			uadApplicationName, uadAutoDelete, uadOutputPath, uadPackagePath,
-			deprecated, pkEntityColumns, regularEntityColumns,
-			blobEntityColumns, collectionEntityColumns, entityColumns,
-			entityOrder, entityFinders, referenceEntities,
+			variableName, pluralName, pluralVariableName, humanName, tableName,
+			alias, uuid, uuidAccessor, externalReferenceCode, localService,
+			remoteService, persistence, persistenceClassName, finderClassName,
+			dataSource, sessionFactory, txManager, cacheEnabled,
+			changeTrackingEnabled, dynamicUpdateEnabled, jsonEnabled,
+			mvccEnabled, trashEnabled, uadApplicationName, uadAutoDelete,
+			uadOutputPath, uadPackagePath, deprecated, pkEntityColumns,
+			regularEntityColumns, blobEntityColumns, collectionEntityColumns,
+			entityColumns, entityOrder, entityFinders, referenceEntities,
 			unresolvedReferenceEntityNames, txRequiredMethodNames,
 			resourceActionModel);
 
@@ -7165,7 +7158,7 @@ public class ServiceBuilder {
 			"column");
 
 		versionEntityColumnElement.addAttribute(
-			"name", entity.getVarName() + "VersionId");
+			"name", entity.getVariableName() + "VersionId");
 		versionEntityColumnElement.addAttribute("primary", "true");
 		versionEntityColumnElement.addAttribute("type", "long");
 

@@ -84,27 +84,10 @@ definition {
 				fragmentName = "Container",
 				scope = "Master");
 
-			Click.clickNoWaitForVisible(
-				key_elementType = "Container",
-				key_position = "1",
-				locator1 = "PageEditor#LAYOUT_ELEMENTS_HEADER");
-
-			PageEditor.expandFragmentCollection(collectionName = "Basic Components");
-
-			DragAndDrop.javaScriptDragAndDropToObject(
-				key_collectionName = "Basic Components",
-				key_fragmentName = "Heading",
-				key_position = "1",
-				locator1 = "PageEditor#FRAGMENTS_AND_WIDGETS_TAB_FRAGMENT",
-				locator2 = "PageEditor#CONTAINER_CONTAINER",
-				value1 = "");
-
-			PageEditor.waitForAutoSave();
-
-			AssertElementPresent(
-				key_elementHeader = "//div[contains(@class,'page-editor')]//li[contains(.,'Heading')]",
-				key_position = "1",
-				locator1 = "PageEditor#CONTAINER_CONTAINER_NESTED_ELEMENT");
+			PageEditor.addElementToContainer(
+				collectionName = "Basic Components",
+				fragmentName = "Heading",
+				navTab = "Fragments");
 
 			PageEditor.addFragment(
 				collectionName = "Layout Elements",
@@ -183,7 +166,7 @@ definition {
 	@description = "This is a use case for LPS-102207. Can export a master page template containing the custom configuration settings of fragments and import."
 	@priority = "5"
 	test ExportImportMastersPageTemplateWithCustomConfigurationSettingOfFragments {
-		property portal.acceptance = "quarantine";
+		property portal.acceptance = "true";
 
 		task ("Add a custom master") {
 			JSONLayoutpagetemplate.addMasterPageTemplateEntry(
@@ -495,6 +478,8 @@ definition {
 	@description = "This is a use case for LPS-106815. The Organization Role permission settings of widgets will be exported and imported with master page template."
 	@priority = "4"
 	test ExportImportMastersPageTemplateWithOrganizationRolePermissionSettingsOfWidgets {
+		property osgi.app.includes = "account";
+
 		task ("Add a organization and organization site") {
 			JSONOrganization.addOrganization(
 				organizationName = "Organization Name 1",

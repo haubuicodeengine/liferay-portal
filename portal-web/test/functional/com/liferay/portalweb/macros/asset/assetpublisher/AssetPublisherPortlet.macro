@@ -38,7 +38,7 @@ definition {
 
 		SelectFrame(locator1 = "IFrame#SELECT_SITES");
 
-		Navigator.gotoNavTab(navTab = "My Sites");
+		Navigator.gotoNavTab(navTab = "Sites That I Administer");
 
 		SiteSelector.viewSite(site = "${siteName}");
 	}
@@ -71,7 +71,7 @@ definition {
 
 			SelectFrame(locator1 = "IFrame#SELECT_SITES");
 
-			Navigator.gotoNavTab(navTab = "My Sites");
+			Navigator.gotoNavTab(navTab = "Sites That I Administer");
 
 			SiteSelector.selectSite(site = "${otherSite}");
 		}
@@ -507,7 +507,7 @@ definition {
 
 			SelectFrame(locator1 = "IFrame#SELECT_SITES");
 
-			Navigator.gotoNavTab(navTab = "My Sites");
+			Navigator.gotoNavTab(navTab = "Sites That I Administer");
 
 			LexiconEntry.changeDisplayStyle(displayStyle = "table");
 
@@ -721,7 +721,7 @@ definition {
 	macro gotoEditAssetPG {
 		MouseOver(
 			key_assetTitle = "${assetTitle}",
-			locator1 = "APAsset#ASSET_TITLE");
+			locator1 = "AP#ASSET_ABSTRACT_TITLE");
 
 		Click.mouseOverClick(
 			key_assetTitle = "${assetTitle}",
@@ -865,7 +865,7 @@ definition {
 		AssetPublisherPortlet.clickAssetTitle(assetTitle = "${assetTitle}");
 
 		AssertTextEquals.assertPartialText(
-			locator1 = "APAsset#ASSET_TITLE_HEADER",
+			locator1 = "AP#ASSET_ABSTRACT_TITLE",
 			value1 = "${assetTitle}");
 
 		AssertTextEquals.assertPartialText(
@@ -1015,7 +1015,7 @@ definition {
 
 			SelectFrame(locator1 = "IFrame#SELECT_SITES");
 
-			Navigator.gotoNavTab(navTab = "My Sites");
+			Navigator.gotoNavTab(navTab = "Sites That I Administer");
 
 			var key_siteName = "${liferaySiteName}";
 
@@ -1282,20 +1282,6 @@ definition {
 			value1 = "There are no results.");
 	}
 
-	macro viewMultipleAssetOrderPGViaAP {
-		AssertTextEquals(
-			locator1 = "AP#ASSET_ABSTRACT_GENERIC_TITLE_1",
-			value1 = "${assetTitle1}");
-
-		AssertTextEquals(
-			locator1 = "AP#ASSET_ABSTRACT_GENERIC_TITLE_2",
-			value1 = "${assetTitle2}");
-
-		AssertTextEquals(
-			locator1 = "AP#ASSET_ABSTRACT_GENERIC_TITLE_3",
-			value1 = "${assetTitle3}");
-	}
-
 	macro viewMultipleDDLRecordsViaAP {
 		AssertTextEquals.assertPartialText(
 			locator1 = "AP#ASSET_ABSTRACT_DDL_RECORD_1",
@@ -1354,20 +1340,6 @@ definition {
 		AssertElementNotPresent(locator1 = "AP#ASSET_EDIT");
 	}
 
-	macro viewOrderedFieldPG {
-		AssertTextEquals(
-			locator1 = "AP#ASSET_ORDER_FIRST",
-			value1 = "${firstAsset}");
-
-		AssertTextEquals(
-			locator1 = "AP#ASSET_ORDER_SECOND",
-			value1 = "${secondAsset}");
-
-		AssertTextEquals(
-			locator1 = "AP#ASSET_ORDER_THIRD",
-			value1 = "${thirdAsset}");
-	}
-
 	macro viewPaginatedAssetsPG {
 		var key_pageMod = "${pageMod}";
 		var key_pageNumber = "${pageNumber}";
@@ -1409,7 +1381,7 @@ definition {
 			value1 = "${assetContent}");
 
 		AssertClick(
-			locator1 = "APAsset#ASSET_TITLE",
+			locator1 = "AP#ASSET_ABSTRACT_TITLE",
 			value1 = "${assetTitle}");
 
 		if (isSet(assetPriority)) {

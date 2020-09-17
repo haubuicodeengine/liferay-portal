@@ -66,8 +66,8 @@ Map<String, Object> fragmentsEditorData = HashMapBuilder.<String, Object>put(
 %>
 
 <div class="asset-full-content clearfix mb-5 <%= assetPublisherDisplayContext.isDefaultAssetPublisher() ? "default-asset-publisher" : StringPool.BLANK %> <%= assetPublisherDisplayContext.isShowAssetTitle() ? "show-asset-title" : "no-title" %> <%= ((previewClassNameId == assetEntry.getClassNameId()) && (previewClassPK == assetEntry.getClassPK())) ? "p-1 preview-asset-entry" : StringPool.BLANK %>" <%= AUIUtil.buildData(fragmentsEditorData) %>>
-	<div class="mb-2">
-		<h4 class="component-title">
+	<div class="align-items-center d-flex mb-2">
+		<p class="component-title h4">
 			<c:if test="<%= showBackURL && Validator.isNotNull(redirect) %>">
 				<liferay-ui:icon
 					cssClass="header-back-to"
@@ -82,24 +82,24 @@ Map<String, Object> fragmentsEditorData = HashMapBuilder.<String, Object>put(
 					<%= HtmlUtil.escape(title) %>
 				</span>
 			</c:if>
+		</p>
 
-			<c:if test="<%= !print %>">
+		<c:if test="<%= !print %>">
 
-				<%
-				String fullContentRedirect = currentURL;
+			<%
+			String fullContentRedirect = currentURL;
 
-				if (WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(assetEntry.getCompanyId(), assetEntry.getGroupId(), assetEntry.getClassName())) {
-					fullContentRedirect = redirect;
-				}
+			if (WorkflowDefinitionLinkLocalServiceUtil.hasWorkflowDefinitionLink(assetEntry.getCompanyId(), assetEntry.getGroupId(), assetEntry.getClassName())) {
+				fullContentRedirect = redirect;
+			}
 
-				request.setAttribute("view.jsp-fullContentRedirect", fullContentRedirect);
-				%>
+			request.setAttribute("view.jsp-fullContentRedirect", fullContentRedirect);
+			%>
 
-				<span class="d-inline-flex">
-					<liferay-util:include page="/asset_actions.jsp" servletContext="<%= application %>" />
-				</span>
-			</c:if>
-		</h4>
+			<span class="d-inline-flex">
+				<liferay-util:include page="/asset_actions.jsp" servletContext="<%= application %>" />
+			</span>
+		</c:if>
 	</div>
 
 	<span class="asset-anchor lfr-asset-anchor" id="<%= assetEntry.getEntryId() %>"></span>

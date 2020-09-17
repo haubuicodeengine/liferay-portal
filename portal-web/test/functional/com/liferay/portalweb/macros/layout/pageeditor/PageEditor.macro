@@ -150,6 +150,68 @@ definition {
 		}
 	}
 
+	macro addElementToContainer {
+		if (!(isSet(position))) {
+			var position = "1";
+		}
+
+		PageEditor.gotoTab(tabName = "Fragments and Widgets");
+
+		if ("${navTab}" == "Fragments") {
+			Navigator.gotoNavTab(navTab = "${navTab}");
+
+			PageEditor.expandFragmentCollection(collectionName = "${collectionName}");
+
+			DragAndDrop.javaScriptDragAndDropToObject(
+				key_collectionName = "${collectionName}",
+				key_elementType = "Container",
+				key_fragmentName = "${fragmentName}",
+				key_position = "${position}",
+				locator1 = "PageEditor#FRAGMENTS_AND_WIDGETS_TAB_FRAGMENT",
+				locator2 = "PageEditor#CONTAINER_CONTAINER",
+				value1 = "");
+
+			PageEditor.waitForAutoSave();
+
+			AssertElementPresent(
+				key_elementHeader = "//li[contains(@class,'topper__title') and contains(.,'${fragmentName}')]",
+				key_elementType = "Container",
+				key_position = "${position}",
+				locator1 = "PageEditor#CONTAINER_CONTAINER_NESTED_ELEMENT");
+		}
+		else if ("${navTab}" == "Widgets") {
+			Navigator.gotoNavTab(navTab = "${navTab}");
+
+			Type.sendKeysApplicationSearch(
+				locator1 = "PageEditor#WIDGETS_APPLICATION_SEARCH_FIELD",
+				value1 = "${portletName}");
+
+			DragAndDrop.javaScriptDragAndDropToObject(
+				key_elementType = "Container",
+				key_portletName = "${portletName}",
+				key_position = "${position}",
+				locator1 = "PageEditor#FRAGMENTS_AND_WIDGETS_TAB_WIDGET",
+				locator2 = "PageEditor#CONTAINER_CONTAINER",
+				value1 = "${portletName}");
+
+			Pause(locator1 = "5000");
+
+			PageEditor.waitForAutoSave();
+
+			AssertElementPresent(
+				key_elementHeader = "//li[contains(@class,'topper__title') and contains(.,'${portletName}')]",
+				key_elementType = "Container",
+				key_position = "${position}",
+				locator1 = "PageEditor#CONTAINER_CONTAINER_NESTED_ELEMENT");
+
+			PageEditor.gotoTab(tabName = "Contents");
+
+			PageEditor.gotoTab(tabName = "Fragments and Widgets");
+
+			PageEditor.closeSidebar(tabName = "Fragments and Widgets");
+		}
+	}
+
 	macro addExperience {
 		var key_experienceName = "${experienceName}";
 
@@ -654,6 +716,15 @@ definition {
 			Pause(locator1 = "3000");
 		}
 
+		if (isSet(separatorColor)) {
+			Click(
+				key_borderBottom = "Separator Color",
+				key_paletteItem = "${separatorColor}",
+				locator1 = "Button#BORDER_BOTTOM_PALETTE_ITEM");
+
+			Pause(locator1 = "3000");
+		}
+
 		if (isSet(size)) {
 			Select(
 				key_fieldLabel = "Size",
@@ -730,57 +801,97 @@ definition {
 			locator1 = "PageEditor#NAV_ITEM_BUTTON",
 			value1 = "General");
 
-		Click(locator1 = "PageEditor#PLUS_ICON_BUTTON");
-
-		SelectFrame(locator1 = "IFrame#MODAL_BODY");
-
-		if (isSet(assetListName)) {
-			NavItem.click(navItem = "Collections");
-
-			LexiconCard.clickCard(card = "${assetListName}");
-
+		if (isSet(selectedName)) {
 			AssertElementPresent(
-				key_contentName = "${assetListName}",
+				key_contentName = "${selectedName}",
 				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT");
+		}
+		else {
+			Click(locator1 = "PageEditor#PLUS_ICON_BUTTON");
 
-			if (isSet(layout)) {
+			SelectFrame(locator1 = "IFrame#MODAL_BODY");
+
+			if (isSet(assetListName)) {
+				NavItem.click(navItem = "Collections");
+
+				LexiconCard.clickCard(card = "${assetListName}");
+
+				AssertElementPresent(
+					key_contentName = "${assetListName}",
+					locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT");
+			}
+			else if (isSet(infoListProviderName)) {
+				NavItem.click(navItem = "Collection Providers");
+
+				LexiconCard.clickCard(card = "${infoListProviderName}");
+
+				AssertElementPresent(
+					key_contentName = "${infoListProviderName}",
+					locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT");
+			}
+		}
+
+		if (isSet(layout)) {
+			Select(
+				key_fieldLabel = "Layout",
+				locator1 = "Select#GENERIC_SELECT_FIELD",
+				value1 = "${layout}");
+
+			Pause(locator1 = "3000");
+
+			AssertSelectedLabel(
+				key_fieldLabel = "Layout",
+				locator1 = "Select#GENERIC_SELECT_FIELD",
+				value1 = "${layout}");
+		}
+
+		if (isSet(listStyle)) {
+			AssertElementPresent(
+				key_fieldLabel = "List Style",
+				key_groupLabel = "Templates",
+				key_value = "${listStyle}",
+				locator1 = "Select#GROUPED_SELECT_VALUE");
+
+			Select(
+				key_fieldLabel = "List Style",
+				locator1 = "Select#GENERIC_SELECT_FIELD",
+				value1 = "${listStyle}");
+
+			Pause(locator1 = "3000");
+
+			AssertSelectedLabel(
+				key_fieldLabel = "List Style",
+				locator1 = "Select#GENERIC_SELECT_FIELD",
+				value1 = "${listStyle}");
+
+			if (isSet(listItemStyle)) {
 				Select(
-					key_fieldLabel = "Layout",
+					key_fieldLabel = "List Item Style",
 					locator1 = "Select#GENERIC_SELECT_FIELD",
-					value1 = "${layout}");
+					value1 = "${listItemStyle}");
 
 				Pause(locator1 = "3000");
 
 				AssertSelectedLabel(
-					key_fieldLabel = "Layout",
+					key_fieldLabel = "List Item Style",
 					locator1 = "Select#GENERIC_SELECT_FIELD",
-					value1 = "${layout}");
-			}
-
-			if (isSet(maxNumberOfItems)) {
-				Type(
-					key_fieldLabel = "Max Number Of Items",
-					locator1 = "FormFields#NUMBER_FIELD",
-					value1 = "${maxNumberOfItems}");
-
-				AssertTextEquals(
-					key_fieldLabel = "Max Number Of Items",
-					locator1 = "FormFields#NUMBER_FIELD",
-					value1 = "${maxNumberOfItems}");
+					value1 = "${listItemStyle}");
 			}
 		}
 
-		if (isSet(infoListProviderName)) {
-			NavItem.click(navItem = "Collection Providers");
+		if (isSet(maxNumberOfItems)) {
+			Type(
+				key_fieldLabel = "Max Number Of Items",
+				locator1 = "FormFields#NUMBER_FIELD",
+				value1 = "${maxNumberOfItems}");
 
-			LexiconCard.clickCard(card = "${infoListProviderName}");
-
-			AssertElementPresent(
-				key_contentName = "${infoListProviderName}",
-				locator1 = "PageEditor#ITEM_SELECTOR_CONTENT_INPUT");
+			AssertTextEquals(
+				key_fieldLabel = "Max Number Of Items",
+				locator1 = "FormFields#NUMBER_FIELD",
+				value1 = "${maxNumberOfItems}");
 		}
 
-		Pause(locator1 = "1000");
+		PageEditor.waitForAutoSave();
 	}
 
 	macro editComment {
@@ -989,7 +1100,7 @@ definition {
 				imageFileName = "${imageFileName}",
 				navTab = "Documents and Media");
 		}
-		if (isSet(imageSourceURL)) {
+		else if (isSet(imageSourceURL)) {
 			ItemSelector.addFromURL(
 				imageSourceURL = "${imageSourceURL}",
 				navTab = "URL");
@@ -1052,7 +1163,7 @@ definition {
 				value1 = "${text}");
 		}
 
-		Click(locator1 = "PageEditor#MANAGEMENT_BAR");
+		Click(locator1 = "PageEditor#FRAGMENT_SIDEBAR_BODY");
 
 		PageEditor.waitForAutoSave();
 	}
@@ -1330,6 +1441,25 @@ definition {
 				key_navItem = "Link",
 				locator1 = "PageEditor#NAV_ITEM_BUTTON",
 				value1 = "Link");
+
+			Type(
+				locator1 = "PageEditorEditableLink#URL",
+				value1 = "${url}");
+
+			Click(
+				key_sidebarButton = "Selection",
+				locator1 = "PageEditor#FRAGMENT_SIDEBAR_TITLE");
+
+			if (isSet(target)) {
+				Select(
+					key_fieldLabel = "Target",
+					locator1 = "Select#GENERIC_SELECT_FIELD",
+					value1 = "${target}");
+
+				Pause(locator1 = "3000");
+			}
+
+			PageEditor.waitForAutoSave();
 		}
 
 		PageEditor.waitForAutoSave();
@@ -2103,12 +2233,9 @@ definition {
 		}
 
 		if (isSet(bottomSpacing)) {
-			var fragmentName = StringUtil.lowerCase("${fragmentName}");
-
 			AssertElementPresent(
 				key_bottomSpacing = "${bottomSpacing}",
-				key_fragmentName = "${fragmentName}",
-				locator1 = "Fragment#FRAGMENT_CONFIGURATION_BOTTOM_SPACING");
+				locator1 = "Fragment#BOTTOM_SPACING");
 		}
 
 		if (isSet(boxShadow)) {
@@ -2132,7 +2259,7 @@ definition {
 		if (isSet(height)) {
 			AssertElementPresent(
 				key_height = "${height}",
-				locator1 = "Fragment#FRAGMENT_CONFIGURATION_HEIGHT");
+				locator1 = "Fragment#SPACER_HEIGHT");
 		}
 
 		if (isSet(imageSize)) {
@@ -2141,7 +2268,7 @@ definition {
 			AssertElementPresent(
 				key_fragmentName = "${fragmentName}",
 				key_imageSize = "${imageSize}",
-				locator1 = "Fragment#FRAGMENT_CONFIGURATION_IMAGE_SIZE");
+				locator1 = "Fragment#IMAGE_SIZE");
 		}
 
 		if (isSet(marginBottom)) {
@@ -2216,13 +2343,16 @@ definition {
 				locator1 = "Fragment#FRAGMENT_CONFIGURATION_PADDING_TOP");
 		}
 
-		if (isSet(size)) {
-			var fragmentName = StringUtil.lowerCase("${fragmentName}");
-
+		if (isSet(separatorColor)) {
 			AssertElementPresent(
-				key_fragmentName = "${fragmentName}",
+				key_separatorColor = "${separatorColor}",
+				locator1 = "Fragment#SEPARATOR_COLOR");
+		}
+
+		if (isSet(size)) {
+			AssertElementPresent(
 				key_size = "${size}",
-				locator1 = "Fragment#FRAGMENT_CONFIGURATION_SIZE");
+				locator1 = "Fragment#BUTTON_SIZE");
 		}
 
 		if (isSet(textColor)) {

@@ -12,13 +12,13 @@
  * details.
  */
 
-import Icon from '@clayui/icon';
-import classNames from 'classnames';
+import {ClayButtonWithIcon} from '@clayui/button';
+import {ClayInput} from '@clayui/form';
 import React, {useContext, useEffect, useState} from 'react';
 
 import DataSetDisplayContext from '../../DataSetDisplayContext';
 
-function MainSearch() {
+function MainSearch({setShowMobile}) {
 	const {searchParam, updateSearchParam} = useContext(DataSetDisplayContext);
 
 	const [inputValue, updateInputValue] = useState(searchParam);
@@ -28,7 +28,7 @@ function MainSearch() {
 	}, [searchParam]);
 
 	function handleKeyDown(event) {
-		if (event.keyCode === 13) {
+		if (event.key === 'Enter') {
 			event.preventDefault();
 
 			return updateSearchParam(inputValue);
@@ -36,55 +36,52 @@ function MainSearch() {
 	}
 
 	return (
-		<div className="d-inline">
-			<div className="input-group">
-				<div className="input-group-item">
-					<div className="main-input-wrapper">
-						<input
-							className="form-control input-group-inset input-group-inset-after main-input-search"
-							onChange={(event) =>
-								updateInputValue(event.target.value)
-							}
-							onKeyDown={handleKeyDown}
-							placeholder={Liferay.Language.get('search')}
-							type="text"
-							value={inputValue}
-						/>
+		<ClayInput.Group>
+			<ClayInput.GroupItem>
+				<ClayInput
+					aria-label={Liferay.Language.get('search')}
+					className="input-group-inset input-group-inset-after"
+					onChange={(event) => updateInputValue(event.target.value)}
+					onKeyDown={handleKeyDown}
+					placeholder={Liferay.Language.get('search')}
+					value={inputValue}
+				/>
+				<ClayInput.GroupInsetItem after tag="div">
+					<ClayButtonWithIcon
+						aria-label={Liferay.Language.get('clear')}
+						className="navbar-breakpoint-d-none"
+						disabled={!inputValue.length}
+						displayType="unstyled"
+						monospaced={false}
+						onClick={(event) => {
+							event.preventDefault();
 
-						<button
-							className={classNames(
-								'main-input-reset-button btn btn-unstyled',
-								!inputValue.length && 'd-none'
-							)}
-							disabled={!inputValue.length}
-							onClick={(event) => {
-								event.preventDefault();
-								updateInputValue('');
+							updateInputValue('');
+							setShowMobile(false);
 
-								return updateSearchParam('');
-							}}
-							type="button"
-						>
-							<Icon symbol="times-circle" />
-						</button>
-					</div>
+							updateSearchParam('');
+						}}
+						style={{
+							opacity: !inputValue.length ? 0 : 1,
+							pointerEvents: !inputValue.length ? 'none' : 'auto',
+						}}
+						symbol="times-circle"
+					/>
+					<ClayButtonWithIcon
+						aria-label={Liferay.Language.get('search')}
+						displayType="unstyled"
+						monospaced={false}
+						onClick={(event) => {
+							event.preventDefault();
 
-					<span className="input-group-inset-item input-group-inset-item-after">
-						<button
-							className="btn btn-unstyled"
-							onClick={(event) => {
-								event.preventDefault();
-
-								return updateSearchParam(inputValue);
-							}}
-							type="button"
-						>
-							<Icon symbol="search" />
-						</button>
-					</span>
-				</div>
-			</div>
-		</div>
+							updateSearchParam(inputValue);
+						}}
+						symbol="search"
+						type="submit"
+					/>
+				</ClayInput.GroupInsetItem>
+			</ClayInput.GroupItem>
+		</ClayInput.Group>
 	);
 }
 

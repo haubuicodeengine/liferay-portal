@@ -20,11 +20,9 @@
 CommerceBOMAdminDisplayContext commerceBOMAdminDisplayContext = (CommerceBOMAdminDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
 
 CommerceBOMDefinition commerceBOMDefinition = commerceBOMAdminDisplayContext.getCommerceBOMDefinition();
-%>
 
-<clay:navigation-bar
-	navigationItems="<%= CPNavigationItemRegistryUtil.getNavigationItems(renderRequest) %>"
-/>
+renderResponse.setTitle(LanguageUtil.get(request, "bill-of-materials"));
+%>
 
 <liferay-frontend:screen-navigation
 	containerCssClass="col-md-10"

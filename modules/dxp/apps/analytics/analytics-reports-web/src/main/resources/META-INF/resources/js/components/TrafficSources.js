@@ -11,10 +11,12 @@
 
 import ClayButton from '@clayui/button';
 import className from 'classnames';
+import {useIsMounted} from 'frontend-js-react-web';
 import PropTypes from 'prop-types';
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useMemo, useState} from 'react';
 import {Cell, Pie, PieChart, Tooltip} from 'recharts';
 
+import ConnectionContext from '../context/ConnectionContext';
 import {StoreContext, useWarning} from '../context/store';
 import {numberFormat} from '../utils/numberFormat';
 import EmptyPieChart from './EmptyPieChart';
@@ -41,20 +43,47 @@ const FALLBACK_COLOR = '#e92563';
 const getColorByName = (name) => COLORS_MAP[name] || FALLBACK_COLOR;
 
 export default function TrafficSources({
+	dataProvider,
 	languageTag,
 	onTrafficSourceClick,
-	trafficSources,
 }) {
 	const [highlighted, setHighlighted] = useState(null);
 
 	const [, addWarning] = useWarning();
 
+	const {validAnalyticsConnection} = useContext(ConnectionContext);
+
 	const [{publishedToday}] = useContext(StoreContext);
 
-	const fullPieChart = trafficSources.some((source) => !!source.value);
+	const [trafficSources, setTrafficSources] = useState([]);
 
-	const missingTrafficSourceValue = trafficSources.some(
-		(trafficSource) => trafficSource.value === undefined
+	const isMounted = useIsMounted();
+
+	useEffect(() => {
+		if (validAnalyticsConnection) {
+			dataProvider()
+				.then((trafficSources) => {
+					if (isMounted()) {
+						setTrafficSources(trafficSources);
+					}
+				})
+				.catch(() => {
+					setTrafficSources([]);
+					if (isMounted()) {
+						addWarning();
+					}
+				});
+		}
+	}, [addWarning, dataProvider, isMounted, validAnalyticsConnection]);
+
+	const fullPieChart = useMemo(
+		() => trafficSources.some(({value}) => value),
+		[trafficSources]
+	);
+
+	const missingTrafficSourceValue = useMemo(
+		() => trafficSources.some(({value}) => value === undefined),
+		[trafficSources]
 	);
 
 	useEffect(() => {
@@ -131,6 +160,7 @@ export default function TrafficSources({
 													displayType="link"
 													onClick={() =>
 														onTrafficSourceClick(
+															trafficSources,
 															entry.name
 														)
 													}
@@ -277,7 +307,7 @@ function TrafficSourcesCustomTooltip(props) {
 }
 
 TrafficSources.propTypes = {
+	dataProvider: PropTypes.func.isRequired,
 	languageTag: PropTypes.string.isRequired,
 	onTrafficSourceClick: PropTypes.func.isRequired,
-	trafficSources: PropTypes.array.isRequired,
 };

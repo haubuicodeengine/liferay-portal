@@ -109,6 +109,8 @@ export default class UnsafeHTML extends React.PureComponent {
 		const ref = this.state.ref;
 		ref.className = this.props.className;
 
+		ref.removeAttribute('style');
+
 		Object.keys(this.props.style).forEach((key) => {
 			ref.style[key] = this.props.style[key];
 		});

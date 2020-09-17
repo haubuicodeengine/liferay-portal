@@ -112,7 +112,8 @@ public class CommerceWishListDisplayContext {
 			_commerceWishList =
 				_commerceWishListHttpHelper.getCurrentCommerceWishList(
 					httpServletRequest,
-					_commerceWishListRequestHelper.getResponse());
+					_commerceWishListRequestHelper.
+						getResponseHttpServletResponse());
 		}
 
 		return _commerceWishList;
@@ -168,7 +169,7 @@ public class CommerceWishListDisplayContext {
 				cpInstance.getCPInstanceId(), 1,
 				_commerceWishListRequestHelper.getCommerceContext());
 
-		if (commerceMoney == null) {
+		if (commerceMoney.isEmpty()) {
 			return StringPool.BLANK;
 		}
 

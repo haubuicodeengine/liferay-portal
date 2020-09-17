@@ -87,27 +87,42 @@ public class LayoutDataConverter {
 					inputRowJSONObject.getJSONObject("config");
 
 				if (inputRowConfigJSONObject != null) {
-					containerStyledLayoutStructureItem.
-						setBackgroundColorCssClass(
+					JSONObject stylesJSONObject = JSONUtil.put(
+						"backgroundImage",
+						_getBackgroundImageJSONObject(inputRowConfigJSONObject)
+					).put(
+						"paddingBottom",
+						inputRowConfigJSONObject.getInt("paddingVertical", 0)
+					).put(
+						"paddingLeft",
+						inputRowConfigJSONObject.getInt("paddingHorizontal", 0)
+					).put(
+						"paddingRight",
+						inputRowConfigJSONObject.getInt("paddingHorizontal", 0)
+					).put(
+						"paddingTop",
+						inputRowConfigJSONObject.getInt("paddingVertical", 0)
+					);
+
+					if (inputRowConfigJSONObject.has("containerType")) {
+						containerStyledLayoutStructureItem.setWidthType(
 							inputRowConfigJSONObject.getString(
-								"backgroundColorCssClass"));
-					containerStyledLayoutStructureItem.
-						setBackgroundImageJSONObject(
-							_getBackgroundImageJSONObject(
-								inputRowConfigJSONObject));
-					containerStyledLayoutStructureItem.setPaddingBottom(
-						inputRowConfigJSONObject.getInt("paddingVertical", 0));
-					containerStyledLayoutStructureItem.setPaddingLeft(
-						inputRowConfigJSONObject.getInt(
-							"paddingHorizontal", 0));
-					containerStyledLayoutStructureItem.setPaddingRight(
-						inputRowConfigJSONObject.getInt(
-							"paddingHorizontal", 0));
-					containerStyledLayoutStructureItem.setPaddingTop(
-						inputRowConfigJSONObject.getInt("paddingVertical", 0));
-					containerStyledLayoutStructureItem.setWidthType(
-						inputRowConfigJSONObject.getString(
-							"widthType", "fluid"));
+								"containerType", "fixed"));
+					}
+					else {
+						containerStyledLayoutStructureItem.setWidthType(
+							inputRowConfigJSONObject.getString(
+								"widthType", "fixed"));
+					}
+
+					containerStyledLayoutStructureItem.updateItemConfig(
+						JSONUtil.put(
+							"backgroundColorCssClass",
+							inputRowConfigJSONObject.getString(
+								"backgroundColorCssClass")
+						).put(
+							"styles", stylesJSONObject
+						));
 				}
 
 				RowStyledLayoutStructureItem rowStyledLayoutStructureItem =

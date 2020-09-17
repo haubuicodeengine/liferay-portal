@@ -40,14 +40,37 @@
 				{
 					"defaultValue": "",
 					"label": "Width",
-					"name": "width",
+					"name": "videoWidth",
 					"type": "text"
 				},
 				{
 					"defaultValue": "",
 					"label": "Height",
-					"name": "height",
+					"name": "videoHeight",
 					"type": "text"
+				},
+				{
+					"dataType": "string",
+					"defaultValue": "flex-start",
+					"label": "Align",
+					"name": "align",
+					"type": "select",
+					"typeOptions": {
+						"validValues": [
+							{
+								"label": "left",
+								"value": "flex-start"
+							},
+							{
+								"label": "center",
+								"value": "center"
+							},
+							{
+								"label": "right",
+								"value": "flex-end"
+							}
+						]
+					}
 				}
 			]
 		}

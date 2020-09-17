@@ -330,18 +330,22 @@ const MillerColumnsItem = ({
 
 			<ClayLayout.ContentCol expand>
 				<h4 className="list-group-title text-truncate-inline">
-					<a className="text-truncate" href={viewUrl}>
-						{title}
-					</a>
+					{viewUrl ? (
+						<ClayLink className="text-truncate" href={viewUrl}>
+							{title}
+						</ClayLink>
+					) : (
+						<span className="text-truncate">{title}</span>
+					)}
 				</h4>
 
 				{description && (
-					<h5 className="list-group-subtitle small text-truncate">
-						{description}
+					<h5 className="d-flex list-group-subtitle small">
+						<span className="text-truncate">{description}</span>
 
 						{states.map((state) => (
 							<ClayLabel
-								className="inline-item-after"
+								className="inline-item-after text-truncate"
 								displayType={ITEM_STATES_COLORS[state.id]}
 								key={state.id}
 							>

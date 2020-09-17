@@ -205,7 +205,11 @@ public class BookmarksEntryLocalServiceImpl
 
 		// Expando
 
-		expandoRowLocalService.deleteRows(entry.getEntryId());
+		expandoRowLocalService.deleteRows(
+			entry.getCompanyId(),
+			classNameLocalService.getClassNameId(
+				BookmarksEntry.class.getName()),
+			entry.getEntryId());
 
 		// Ratings
 

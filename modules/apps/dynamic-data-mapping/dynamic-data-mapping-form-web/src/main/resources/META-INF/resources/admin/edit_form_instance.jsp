@@ -49,6 +49,7 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 	<div class="forms-navigation-bar">
 		<clay:navigation-bar
 			id="formsNavigationBar"
+			inverted="<%= true %>"
 			navigationItems="<%= ddmFormAdminDisplayContext.getFormBuilderNavigationItems() %>"
 		/>
 	</div>
@@ -123,7 +124,11 @@ renderResponse.setTitle((formInstance == null) ? LanguageUtil.get(request, "new-
 		<aui:input name="serializedFormBuilderContext" type="hidden" value="<%= serializedFormBuilderContext %>" />
 		<aui:input name="serializedSettingsContext" type="hidden" value="" />
 
-		<%@ include file="/admin/exceptions.jspf" %>
+		<clay:container-fluid>
+			<div class="exception-container">
+				<%@ include file="/admin/exceptions.jspf" %>
+			</div>
+		</clay:container-fluid>
 
 		<div class="ddm-form-basic-info">
 			<clay:container-fluid>

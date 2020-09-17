@@ -294,10 +294,10 @@ public class CommercePriceListDisplayContext
 
 			creationMenu.addDropdownItem(
 				dropdownItem -> {
+					dropdownItem.setHref(getAddCommercePriceListRenderURL());
 					dropdownItem.setLabel(
 						LanguageUtil.get(
 							httpServletRequest, "create-new-price-list"));
-					dropdownItem.setHref(getAddCommercePriceListRenderURL());
 					dropdownItem.setTarget("modal-lg");
 				});
 		}
@@ -332,16 +332,15 @@ public class CommercePriceListDisplayContext
 	}
 
 	public List<ClayDataSetActionDropdownItem>
-			getPriceModifierCategoryClayDataSetActionDropdownItems()
-		throws PortalException {
+		getPriceModifierCategoryClayDataSetActionDropdownItems() {
 
 		List<ClayDataSetActionDropdownItem> clayDataSetActionDropdownItems =
 			new ArrayList<>();
 
 		clayDataSetActionDropdownItems.add(
 			new ClayDataSetActionDropdownItem(
-				null, "trash", "delete",
-				LanguageUtil.get(httpServletRequest, "delete"), "delete",
+				null, "trash", "remove",
+				LanguageUtil.get(httpServletRequest, "remove"), "delete",
 				"delete", "headless"));
 
 		return clayDataSetActionDropdownItems;
@@ -354,32 +353,30 @@ public class CommercePriceListDisplayContext
 	}
 
 	public List<ClayDataSetActionDropdownItem>
-			getPriceModifierCPDefinitionClayDataSetActionDropdownItems()
-		throws PortalException {
+		getPriceModifierCPDefinitionClayDataSetActionDropdownItems() {
 
 		List<ClayDataSetActionDropdownItem> clayDataSetActionDropdownItem =
 			new ArrayList<>();
 
 		clayDataSetActionDropdownItem.add(
 			new ClayDataSetActionDropdownItem(
-				null, "trash", "delete",
-				LanguageUtil.get(httpServletRequest, "delete"), "delete",
+				null, "trash", "remove",
+				LanguageUtil.get(httpServletRequest, "remove"), "delete",
 				"delete", "headless"));
 
 		return clayDataSetActionDropdownItem;
 	}
 
 	public List<ClayDataSetActionDropdownItem>
-			getPriceModifierPricingClassClayDataSetActionDropdownItems()
-		throws PortalException {
+		getPriceModifierPricingClassClayDataSetActionDropdownItems() {
 
 		List<ClayDataSetActionDropdownItem> clayDataSetActionDropdownItems =
 			new ArrayList<>();
 
 		clayDataSetActionDropdownItems.add(
 			new ClayDataSetActionDropdownItem(
-				null, "trash", "delete",
-				LanguageUtil.get(httpServletRequest, "delete"), "delete",
+				null, "trash", "remove",
+				LanguageUtil.get(httpServletRequest, "remove"), "delete",
 				"delete", "headless"));
 
 		return clayDataSetActionDropdownItems;
@@ -399,11 +396,11 @@ public class CommercePriceListDisplayContext
 		if (hasPermission(getCommercePriceListId(), ActionKeys.UPDATE)) {
 			creationMenu.addDropdownItem(
 				dropdownItem -> {
+					dropdownItem.setHref(
+						getAddCommercePriceModifierRenderURL());
 					dropdownItem.setLabel(
 						LanguageUtil.get(
 							httpServletRequest, "add-price-modifier"));
-					dropdownItem.setHref(
-						getAddCommercePriceModifierRenderURL());
 					dropdownItem.setTarget("modal-lg");
 				});
 		}

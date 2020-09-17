@@ -14,6 +14,7 @@
 
 package com.liferay.dynamic.data.mapping.internal.render;
 
+import com.liferay.dynamic.data.mapping.constants.DDMConstants;
 import com.liferay.dynamic.data.mapping.constants.DDMPortletKeys;
 import com.liferay.dynamic.data.mapping.constants.DDMTemplateConstants;
 import com.liferay.dynamic.data.mapping.internal.util.DDMFormFieldFreeMarkerRendererUtil;
@@ -79,7 +80,7 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 
 	@Override
 	public String[] getSupportedDDMFormFieldTypes() {
-		return _SUPPORTED_DDM_FORM_FIELD_TYPES;
+		return DDMConstants.SUPPORTED_DDM_FORM_FIELD_TYPES;
 	}
 
 	@Override
@@ -92,7 +93,10 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 			return getFieldHTML(
 				ddmFormFieldRenderingContext.getHttpServletRequest(),
 				ddmFormFieldRenderingContext.getHttpServletResponse(),
-				ddmFormField, ddmFormFieldRenderingContext.getFields(), null,
+				ddmFormField,
+				(Set<String>)ddmFormFieldRenderingContext.getProperty(
+					"fieldNamespaces"),
+				ddmFormFieldRenderingContext.getFields(), null,
 				ddmFormFieldRenderingContext.getPortletNamespace(),
 				ddmFormFieldRenderingContext.getNamespace(),
 				ddmFormFieldRenderingContext.getMode(),
@@ -276,9 +280,10 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 	protected String getFieldHTML(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse, DDMFormField ddmFormField,
-			Fields fields, DDMFormField parentDDMFormField,
-			String portletNamespace, String namespace, String mode,
-			boolean readOnly, boolean showEmptyFieldLabel, Locale locale)
+			Set<String> fieldNamespaces, Fields fields,
+			DDMFormField parentDDMFormField, String portletNamespace,
+			String namespace, String mode, boolean readOnly,
+			boolean showEmptyFieldLabel, Locale locale)
 		throws Exception {
 
 		Map<String, Object> freeMarkerContext = getFreeMarkerContext(
@@ -337,6 +342,14 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 
 			String fieldNamespace = StringUtil.randomId(8);
 
+			if (fieldNamespaces != null) {
+				while (fieldNamespaces.contains(fieldNamespace)) {
+					fieldNamespace = StringUtil.randomId(8);
+				}
+
+				fieldNamespaces.add(fieldNamespace);
+			}
+
 			if (fieldDisplayable) {
 				fieldNamespace = getFieldNamespace(
 					fieldsDisplayValue, ddmFieldsCounter, offset);
@@ -354,9 +367,9 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 			childrenHTMLSB.append(
 				getHTML(
 					httpServletRequest, httpServletResponse,
-					ddmFormField.getNestedDDMFormFields(), fields, ddmFormField,
-					portletNamespace, namespace, mode, readOnly,
-					showEmptyFieldLabel, locale));
+					ddmFormField.getNestedDDMFormFields(), fieldNamespaces,
+					fields, ddmFormField, portletNamespace, namespace, mode,
+					readOnly, showEmptyFieldLabel, locale));
 
 			if (Objects.equals(ddmFormField.getType(), "select") ||
 				Objects.equals(ddmFormField.getType(), "radio")) {
@@ -559,10 +572,10 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 	protected String getHTML(
 			HttpServletRequest httpServletRequest,
 			HttpServletResponse httpServletResponse,
-			List<DDMFormField> ddmFormFields, Fields fields,
-			DDMFormField parentDDMFormField, String portletNamespace,
-			String namespace, String mode, boolean readOnly,
-			boolean showEmptyFieldLabel, Locale locale)
+			List<DDMFormField> ddmFormFields, Set<String> fieldNamespaces,
+			Fields fields, DDMFormField parentDDMFormField,
+			String portletNamespace, String namespace, String mode,
+			boolean readOnly, boolean showEmptyFieldLabel, Locale locale)
 		throws Exception {
 
 		StringBundler sb = new StringBundler(ddmFormFields.size());
@@ -571,8 +584,9 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 			sb.append(
 				getFieldHTML(
 					httpServletRequest, httpServletResponse, ddmFormField,
-					fields, parentDDMFormField, portletNamespace, namespace,
-					mode, readOnly, showEmptyFieldLabel, locale));
+					fieldNamespaces, fields, parentDDMFormField,
+					portletNamespace, namespace, mode, readOnly,
+					showEmptyFieldLabel, locale));
 		}
 
 		return sb.toString();
@@ -720,14 +734,6 @@ public class DDMFormFieldFreeMarkerRenderer implements DDMFormFieldRenderer {
 	private static final String _DEFAULT_NAMESPACE = "alloy";
 
 	private static final String _DEFAULT_READ_ONLY_NAMESPACE = "readonly";
-
-	private static final String[] _SUPPORTED_DDM_FORM_FIELD_TYPES = {
-		"checkbox", "ddm-color", "ddm-date", "ddm-decimal",
-		"ddm-documentlibrary", "ddm-geolocation", "ddm-image", "ddm-integer",
-		"ddm-journal-article", "ddm-link-to-page", "ddm-number",
-		"ddm-paragraph", "ddm-separator", "ddm-text-html", "fieldset", "option",
-		"radio", "select", "text", "textarea"
-	};
 
 	private static final String _TPL_EXT = ".ftl";
 

@@ -14,7 +14,6 @@
 
 package com.liferay.depot.web.internal.item.selector.provider;
 
-import com.liferay.depot.configuration.DepotConfiguration;
 import com.liferay.depot.model.DepotEntry;
 import com.liferay.depot.service.DepotEntryService;
 import com.liferay.item.selector.provider.GroupItemSelectorProvider;
@@ -113,11 +112,6 @@ public class DepotGroupItemSelectorProvider
 		return _language.get(locale, "asset-library");
 	}
 
-	@Override
-	public boolean isEnabled() {
-		return _depotConfiguration.isEnabled();
-	}
-
 	private long _getGroupId(long groupId) throws PortalException {
 		Group group = _groupService.getGroup(groupId);
 
@@ -147,9 +141,6 @@ public class DepotGroupItemSelectorProvider
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		DepotGroupItemSelectorProvider.class);
-
-	@Reference
-	private DepotConfiguration _depotConfiguration;
 
 	@Reference
 	private DepotEntryService _depotEntryService;

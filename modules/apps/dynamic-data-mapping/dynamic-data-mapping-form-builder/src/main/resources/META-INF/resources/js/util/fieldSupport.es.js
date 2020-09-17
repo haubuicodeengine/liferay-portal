@@ -133,8 +133,7 @@ export const getFieldProperties = (
 		({fieldName, localizable, localizedValue = {}, type, value}) => {
 			if (
 				localizable &&
-				(fieldName == 'predefinedValue' ||
-					localizedValue[editingLanguageId])
+				localizedValue[editingLanguageId] !== undefined
 			) {
 				properties[fieldName] = localizedValue[editingLanguageId];
 			}
@@ -148,6 +147,19 @@ export const getFieldProperties = (
 				else {
 					properties[fieldName] = value[editingLanguageId];
 				}
+			}
+			else if (type == 'validation') {
+				if (!value.errorMessage[editingLanguageId]) {
+					value.errorMessage[editingLanguageId] =
+						value.errorMessage[defaultLanguageId];
+				}
+
+				if (!value.parameter[editingLanguageId]) {
+					value.parameter[editingLanguageId] =
+						value.parameter[defaultLanguageId];
+				}
+
+				properties[fieldName] = value;
 			}
 			else {
 				properties[fieldName] = value;
@@ -206,7 +218,7 @@ export const localizeField = (field, defaultLanguageId, editingLanguageId) => {
 	if (field.localizable && field.localizedValue) {
 		let localizedValue = field.localizedValue[editingLanguageId];
 
-		if (!localizedValue) {
+		if (localizedValue === undefined) {
 			localizedValue = field.localizedValue[defaultLanguageId];
 		}
 

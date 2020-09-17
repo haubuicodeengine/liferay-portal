@@ -800,7 +800,8 @@ definition {
 		Navigator.openSpecificURL(url = "${baseURL}/web/site-name-staging/-/${friendlyUrl}");
 
 		AssertTextEquals.assertPartialText(
-			locator1 = "APAsset#ASSET_TITLE_HEADER",
+			key_assetTitle = "Web Content Title",
+			locator1 = "AP#ASSET_ABSTRACT_TITLE",
 			value1 = "Web Content Title");
 
 		AssertTextEquals.assertPartialText(
@@ -811,7 +812,8 @@ definition {
 		Navigator.openSpecificURL(url = "${baseURL}/web/site-name/-/${friendlyUrl}");
 
 		AssertTextEquals.assertPartialText(
-			locator1 = "APAsset#ASSET_TITLE_HEADER",
+			key_assetTitle = "Web Content Title",
+			locator1 = "AP#ASSET_ABSTRACT_TITLE",
 			value1 = "Web Content Title");
 
 		AssertTextEquals.assertPartialText(
@@ -825,7 +827,6 @@ definition {
 		property app.server.bundles.size = "1";
 		property custom.properties = "tunneling.servlet.shared.secret=1234567890123456${line.separator}auth.verifier.TunnelAuthVerifier.hosts.allowed=";
 		property databases.size = "1";
-		property portal.upstream = "quarantine";
 		property test.name.skip.portal.instance = "PGStaging#PublishWCWithPagesVariationViaRemoteStaging";
 
 		Staging.remoteStagingSetUp(

@@ -946,6 +946,7 @@ public class CPInstanceLocalServiceImpl extends CPInstanceLocalServiceBaseImpl {
 			cProduct.getPublishedCPDefinitionId(), cpInstanceUuid);
 	}
 
+	@Override
 	public List<CPInstance> getCPDefinitionApprovedCPInstances(
 		long cpDefinitionId) {
 
@@ -1763,8 +1764,8 @@ public class CPInstanceLocalServiceImpl extends CPInstanceLocalServiceBaseImpl {
 		searchContext.setAttributes(attributes);
 
 		searchContext.setCompanyId(companyId);
-		searchContext.setStart(start);
 		searchContext.setEnd(end);
+		searchContext.setStart(start);
 
 		if (Validator.isNotNull(keywords)) {
 			searchContext.setKeywords(keywords);
@@ -1845,9 +1846,9 @@ public class CPInstanceLocalServiceImpl extends CPInstanceLocalServiceBaseImpl {
 		searchContext.setAttributes(attributes);
 
 		searchContext.setCompanyId(companyId);
+		searchContext.setEnd(end);
 		searchContext.setGroupIds(groupIds);
 		searchContext.setStart(start);
-		searchContext.setEnd(end);
 
 		if (Validator.isNotNull(keywords)) {
 			searchContext.setKeywords(keywords);
@@ -1886,8 +1887,8 @@ public class CPInstanceLocalServiceImpl extends CPInstanceLocalServiceBaseImpl {
 		searchContext.setAttributes(attributes);
 
 		searchContext.setCompanyId(companyId);
-		searchContext.setStart(start);
 		searchContext.setEnd(end);
+		searchContext.setStart(start);
 
 		if (Validator.isNotNull(keywords)) {
 			searchContext.setKeywords(keywords);

@@ -34,24 +34,20 @@ public class CommerceShippingEngineFixedUpgradeStepRegistrator
 	public void register(Registry registry) {
 		if (_log.isInfoEnabled()) {
 			_log.info(
-				"COMMERCE SHIPPING ENGINE FIXED UPGRADE STEP REGISTRATOR " +
+				"Commerce shipping engine fixed upgrade step registrator " +
 					"STARTED");
 		}
 
 		registry.register(
-			_SCHEMA_VERSION_1_0_0, _SCHEMA_VERSION_1_1_0,
+			"1.0.0", "1.1.0",
 			new CommerceShippingFixedOptionRelUpgradeProcess());
 
 		if (_log.isInfoEnabled()) {
 			_log.info(
-				"COMMERCE SHIPPING ENGINE FIXED UPGRADE STEP REGISTRATOR " +
-					"FINISHED");
+				"Commerce shipping engine fixed upgrade step registrator " +
+					"finished");
 		}
 	}
-
-	private static final String _SCHEMA_VERSION_1_0_0 = "1.0.0";
-
-	private static final String _SCHEMA_VERSION_1_1_0 = "1.1.0";
 
 	private static final Log _log = LogFactoryUtil.getLog(
 		CommerceShippingEngineFixedUpgradeStepRegistrator.class);

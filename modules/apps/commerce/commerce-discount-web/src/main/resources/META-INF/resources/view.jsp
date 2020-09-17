@@ -20,10 +20,6 @@
 CommerceDiscountDisplayContext commerceDiscountDisplayContext = (CommerceDiscountDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
 %>
 
-<clay:navigation-bar
-	navigationItems="<%= PricingNavigationItemRegistryUtil.getNavigationItems(renderRequest) %>"
-/>
-
 <c:if test="<%= commerceDiscountDisplayContext.hasPermission(CommerceDiscountActionKeys.VIEW_COMMERCE_DISCOUNTS) %>">
 
 	<%

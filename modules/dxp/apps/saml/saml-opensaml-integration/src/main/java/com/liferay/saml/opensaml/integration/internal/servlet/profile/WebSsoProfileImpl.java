@@ -21,6 +21,7 @@ import com.liferay.portal.kernel.exception.ContactNameException;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.exception.UserEmailAddressException;
+import com.liferay.portal.kernel.exception.UserEmailAddressException.MustNotUseCompanyMx;
 import com.liferay.portal.kernel.exception.UserScreenNameException;
 import com.liferay.portal.kernel.log.Log;
 import com.liferay.portal.kernel.log.LogFactoryUtil;
@@ -769,30 +770,45 @@ public class WebSsoProfileImpl extends BaseProfile implements WebSsoProfile {
 
 			HttpSession httpSession = originalHttpServletRequest.getSession();
 
+			httpSession.setAttribute(
+				SamlWebKeys.SAML_SUBJECT_NAME_ID, nameID.getValue());
+
+			String error = StringPool.BLANK;
+
 			if (portalException instanceof ContactNameException) {
-				httpSession.setAttribute(
-					SamlWebKeys.SAML_SSO_ERROR,
-					ContactNameException.class.getSimpleName());
+				error = ContactNameException.class.getSimpleName();
+			}
+			else if (portalException instanceof SubjectException) {
+				error = SubjectException.class.getSimpleName();
+			}
+			else if (portalException instanceof MustNotUseCompanyMx) {
+				error = MustNotUseCompanyMx.class.getSimpleName();
 			}
 			else if (portalException instanceof UserEmailAddressException) {
-				httpSession.setAttribute(
-					SamlWebKeys.SAML_SSO_ERROR,
-					UserEmailAddressException.class.getSimpleName());
+				error = UserEmailAddressException.class.getSimpleName();
 			}
 			else if (portalException instanceof UserScreenNameException) {
-				httpSession.setAttribute(
-					SamlWebKeys.SAML_SSO_ERROR,
-					UserScreenNameException.class.getSimpleName());
+				error = UserScreenNameException.class.getSimpleName();
 			}
 			else {
 				Class<?> clazz = portalException.getClass();
 
 				httpSession.setAttribute(
 					SamlWebKeys.SAML_SSO_ERROR, clazz.getSimpleName());
+
+				throw portalException;
 			}
 
-			httpSession.setAttribute(
-				SamlWebKeys.SAML_SUBJECT_NAME_ID, nameID.getValue());
+			httpSession.setAttribute(SamlWebKeys.SAML_SSO_ERROR, error);
+
+			if (_log.isDebugEnabled()) {
+				_log.debug(portalException, portalException);
+			}
+			else {
+				if (!(portalException instanceof SubjectException)) {
+					_log.error(portalException.getMessage());
+				}
+			}
 
 			httpServletResponse.sendRedirect(
 				getAuthRedirectURL(messageContext, httpServletRequest));

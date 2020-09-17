@@ -79,6 +79,7 @@ public class ProjectTemplatesApiTest implements BaseProjectTemplatesTestCase {
 
 		testContains(
 			gradleProjectDir, "build.gradle", DEPENDENCY_RELEASE_PORTAL_API);
+
 		testContains(
 			gradleProjectDir, "src/main/java/foo/api/Foo.java",
 			"public interface Foo");

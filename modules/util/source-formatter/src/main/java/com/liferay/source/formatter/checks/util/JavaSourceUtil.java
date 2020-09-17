@@ -146,6 +146,12 @@ public class JavaSourceUtil extends SourceUtil {
 	public static List<String> splitParameters(String parameters) {
 		List<String> parametersList = new ArrayList<>();
 
+		parameters = StringUtil.trim(parameters);
+
+		if (parameters.equals(StringPool.BLANK)) {
+			return parametersList;
+		}
+
 		int x = -1;
 
 		while (true) {

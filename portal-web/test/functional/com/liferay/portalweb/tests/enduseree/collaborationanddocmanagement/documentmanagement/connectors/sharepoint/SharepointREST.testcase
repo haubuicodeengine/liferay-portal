@@ -99,7 +99,9 @@ definition {
 		DMRepository.addSharepoint(
 			dmRepositoryLibraryPath = "Documentos compartidos",
 			dmRepositoryName = "Sharepoint (${configurationName})",
-			dmRepositorySiteAbsoluteURL = "https://liferaycolab.sharepoint.com");
+			dmRepositorySiteAbsoluteURL = "https://liferaycolab.sharepoint.com",
+			permissionDefinitionKey = "ACCESS",
+			roleTitle = "Guest");
 
 		PortletEntry.save();
 
@@ -439,16 +441,6 @@ definition {
 			dmDocumentFile = "Document_1.doc",
 			dmDocumentTitle = "Document_1.doc",
 			dmRepositoryName = "true");
-
-		Navigator.openSpecificURL(url = "https://localhost:8443/group/guest/~/control_panel/manage?p_p_id=com_liferay_document_library_web_portlet_DLAdminPortlet");
-
-		DMNavigator.gotoDocumentPermissionsCP(dmDocumentTitle = "Collaboration Test Application");
-
-		PermissionsInline.addOrRemoveAccessPermissionFromAllRoles(
-			addOrRemoveViewPermission = "Add",
-			roleList = "guest");
-
-		Navigator.gotoPage(pageName = "Documents and Media Page");
 
 		User.logoutPG();
 

@@ -30,23 +30,12 @@ page import="com.liferay.portal.search.web.internal.custom.facet.configuration.C
 page import="com.liferay.portal.search.web.internal.custom.facet.display.context.CustomFacetDisplayContext" %><%@
 page import="com.liferay.portal.search.web.internal.custom.facet.display.context.CustomFacetTermDisplayContext" %>
 
-<%@ page import="java.util.List" %><%@
-page import="java.util.Map" %>
-
 <portlet:defineObjects />
 
 <%
 CustomFacetDisplayContext customFacetDisplayContext = (CustomFacetDisplayContext)java.util.Objects.requireNonNull(request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT));
 
 CustomFacetPortletInstanceConfiguration customFacetPortletInstanceConfiguration = customFacetDisplayContext.getCustomFacetPortletInstanceConfiguration();
-
-Map<String, Object> contextObjects = HashMapBuilder.<String, Object>put(
-	"customFacetDisplayContext", customFacetDisplayContext
-).put(
-	"namespace", liferayPortletResponse.getNamespace()
-).build();
-
-List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts = customFacetDisplayContext.getTermDisplayContexts();
 %>
 
 <c:choose>
@@ -61,10 +50,16 @@ List<CustomFacetTermDisplayContext> customFacetTermDisplayContexts = customFacet
 
 			<liferay-ddm:template-renderer
 				className="<%= CustomFacetTermDisplayContext.class.getName() %>"
-				contextObjects="<%= contextObjects %>"
+				contextObjects='<%=
+					HashMapBuilder.<String, Object>put(
+						"customFacetDisplayContext", customFacetDisplayContext
+					).put(
+						"namespace", liferayPortletResponse.getNamespace()
+					).build()
+				%>'
 				displayStyle="<%= customFacetPortletInstanceConfiguration.displayStyle() %>"
 				displayStyleGroupId="<%= customFacetDisplayContext.getDisplayStyleGroupId() %>"
-				entries="<%= customFacetTermDisplayContexts %>"
+				entries="<%= customFacetDisplayContext.getTermDisplayContexts() %>"
 			>
 				<liferay-ui:panel-container
 					extended="<%= true %>"

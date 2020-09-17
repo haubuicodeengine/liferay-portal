@@ -17,6 +17,7 @@ import ClayDropDown from '@clayui/drop-down';
 import ClayIcon from '@clayui/icon';
 import ClayLink from '@clayui/link';
 import ClayLoadingIndicator from '@clayui/loading-indicator';
+import {openToast} from 'frontend-js-web';
 import PropTypes from 'prop-types';
 import React, {useContext, useState} from 'react';
 
@@ -44,6 +45,7 @@ export function handleAction(
 		size = '',
 		target = '',
 		title = '',
+		successMessage,
 		url = '',
 	},
 	{executeAsyncItemAction, highlightItems, openModal, openSidePanel}
@@ -76,7 +78,19 @@ export function handleAction(
 		event.preventDefault();
 
 		setLoading(true);
-		executeAsyncItemAction(url, method).then(() => setLoading(false));
+		executeAsyncItemAction(url, method)
+			.then(() => {
+				openToast({
+					message:
+						successMessage ||
+						Liferay.Language.get('action-completed'),
+					type: 'success',
+				});
+				setLoading(false);
+			})
+			.catch((_) => {
+				setLoading(false);
+			});
 	}
 	else if (target === 'blank') {
 		event.preventDefault();
@@ -99,6 +113,7 @@ function ActionItem({
 	href,
 	icon,
 	label,
+	method,
 	onClick,
 	size,
 	target,
@@ -112,9 +127,10 @@ function ActionItem({
 		handleAction(
 			{
 				event,
-				method: data?.method,
+				method,
 				onClick,
 				size: size || 'lg',
+				successMessage: data?.successMessage,
 				target,
 				title,
 				url: href,
@@ -149,14 +165,16 @@ function ActionsDropdownRenderer({actions, itemData, itemId}) {
 
 	const formattedActions = actions
 		? actions.reduce((actions, action) => {
-				if (action.permissionKey) {
-					if (itemData.actions[action.permissionKey]) {
+				if (action.data?.permissionKey) {
+					if (itemData.actions[action.data.permissionKey]) {
 						if (action.target === 'headless') {
 							return [
 								...actions,
 								{
 									...action,
-									...itemData.actions[action.permissionKey],
+									...itemData.actions[
+										action.data.permissionKey
+									],
 								},
 							];
 						}
@@ -217,9 +235,10 @@ function ActionsDropdownRenderer({actions, itemData, itemId}) {
 						{
 							event,
 							itemId,
-							method: actionData?.method,
+							method: action.method ?? actionData?.method,
 							setLoading,
-							url: action.href,
+							successMessage: actionData?.successMessage,
+							url: formatActionURL(action.href, itemData),
 							...action,
 						},
 						context
@@ -262,6 +281,7 @@ function ActionsDropdownRenderer({actions, itemData, itemId}) {
 					handleAction={handleAction}
 					href={item.href && formatActionURL(item.href, itemData)}
 					key={i}
+					method={item.method ?? item.data?.method}
 				/>
 			);
 		});
@@ -291,12 +311,14 @@ ActionsDropdownRenderer.propTypes = {
 		PropTypes.shape({
 			data: PropTypes.shape({
 				method: PropTypes.oneOf(['get', 'delete']),
+				permissionKey: PropTypes.string,
+				successMessage: PropTypes.string,
 			}),
 			href: PropTypes.string,
 			icon: PropTypes.string,
 			label: PropTypes.string.isRequired,
+			method: PropTypes.oneOf(['get', 'delete']),
 			onClick: PropTypes.string,
-			permissionKey: PropTypes.string,
 			target: PropTypes.oneOf([
 				'modal',
 				'sidePanel',

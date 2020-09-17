@@ -17,6 +17,21 @@
 <%@ include file="/init.jsp" %>
 
 <%
+PortletURL portletURL = renderResponse.createRenderURL();
+
+portletURL.setParameter("mvcRenderCommandName", "/view_configuration_screen");
+
+boolean includeSyncContactsFields = ParamUtil.getBoolean(request, "includeSyncContactsFields");
+
+if (includeSyncContactsFields) {
+	portletURL.setParameter("configurationScreenKey", "synced-contact-data");
+}
+else {
+	portletURL.setParameter("configurationScreenKey", "synced-contacts");
+}
+
+String redirect = portletURL.toString();
+
 AnalyticsConfiguration analyticsConfiguration = (AnalyticsConfiguration)request.getAttribute(AnalyticsSettingsWebKeys.ANALYTICS_CONFIGURATION);
 AnalyticsUsersManager analyticsUsersManager = (AnalyticsUsersManager)request.getAttribute(AnalyticsSettingsWebKeys.ANALYTICS_USERS_MANAGER);
 
@@ -29,9 +44,40 @@ if (!Validator.isBlank(analyticsConfiguration.token())) {
 boolean syncAllContacts = analyticsConfiguration.syncAllContacts();
 Set<String> syncedOrganizationIds = SetUtil.fromArray(analyticsConfiguration.syncedOrganizationIds());
 Set<String> syncedUserGroupIds = SetUtil.fromArray(analyticsConfiguration.syncedUserGroupIds());
+
+if (includeSyncContactsFields) {
+	portletDisplay.setShowBackIcon(true);
+	portletDisplay.setURLBack(ParamUtil.getString(request, "backURL", redirect));
+
+	PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(resourceBundle, "select-contact-data"), redirect);
+	PortalUtil.addPortletBreadcrumbEntry(request, LanguageUtil.get(resourceBundle, "select-contacts"), currentURL);
+}
 %>
 
 <portlet:actionURL name="/analytics_settings/edit_synced_contacts" var="editSyncedContactsURL" />
+
+<portlet:renderURL var="editSyncedContactsFieldsURL">
+	<portlet:param name="mvcRenderCommandName" value="/analytics_settings/edit_synced_contacts_fields" />
+</portlet:renderURL>
+
+<c:if test="<%= includeSyncContactsFields %>">
+	<clay:container-fluid>
+		<clay:row>
+			<clay:col
+				size="12"
+			>
+				<div id="breadcrumb">
+					<liferay-ui:breadcrumb
+						showCurrentGroup="<%= false %>"
+						showGuestGroup="<%= false %>"
+						showLayout="<%= false %>"
+						showPortletBreadcrumb="<%= true %>"
+					/>
+				</div>
+			</clay:col>
+		</clay:row>
+	</clay:container-fluid>
+</c:if>
 
 <clay:sheet
 	cssClass="portlet-analytics-settings"
@@ -40,7 +86,7 @@ Set<String> syncedUserGroupIds = SetUtil.fromArray(analyticsConfiguration.synced
 		<liferay-ui:message key="contact-data" />
 	</h2>
 
-	<aui:form action="<%= editSyncedContactsURL %>" method="post" name="fm">
+	<aui:form action="<%= includeSyncContactsFields ? editSyncedContactsFieldsURL : editSyncedContactsURL %>" method="post" name="fm">
 		<aui:input name="redirect" type="hidden" value="<%= currentURL %>" />
 
 		<fieldset <%= connected ? "" : "disabled" %>>
@@ -78,6 +124,7 @@ Set<String> syncedUserGroupIds = SetUtil.fromArray(analyticsConfiguration.synced
 					<portlet:renderURL var="createUserGroupURL">
 						<portlet:param name="mvcRenderCommandName" value="/analytics_settings/edit_synced_contacts_groups" />
 						<portlet:param name="redirect" value="<%= currentURL %>" />
+						<portlet:param name="includeSyncContactsFields" value="<%= String.valueOf(includeSyncContactsFields) %>" />
 					</portlet:renderURL>
 
 					<a class="d-flex m-4 p-2 text-decoration-none" href=<%= createUserGroupURL %>>
@@ -119,6 +166,7 @@ Set<String> syncedUserGroupIds = SetUtil.fromArray(analyticsConfiguration.synced
 					<portlet:renderURL var="createOrganizationsURL">
 						<portlet:param name="mvcRenderCommandName" value="/analytics_settings/edit_synced_contacts_organizations" />
 						<portlet:param name="redirect" value="<%= currentURL %>" />
+						<portlet:param name="includeSyncContactsFields" value="<%= String.valueOf(includeSyncContactsFields) %>" />
 					</portlet:renderURL>
 
 					<a class="d-flex m-4 p-2 text-decoration-none" href=<%= createOrganizationsURL %>>
@@ -157,7 +205,7 @@ Set<String> syncedUserGroupIds = SetUtil.fromArray(analyticsConfiguration.synced
 		<fieldset>
 
 		<aui:button-row>
-			<aui:button disabled="<%= !connected %>" type="submit" value="save" />
+			<aui:button disabled="<%= !connected %>" type="submit" value='<%= includeSyncContactsFields ? "save-and-next" : "save" %>' />
 		</aui:button-row>
 	</aui:form>
 </clay:sheet>

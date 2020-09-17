@@ -41,7 +41,7 @@ boolean hasCustomAttributesAvailable = CustomAttributesUtil.hasCustomAttributes(
 				title='<%= LanguageUtil.get(request, "details") %>'
 			>
 				<div class="col-12 lfr-form-content">
-					<aui:input bean="<%= commercePricingClass %>" disabled="<%= isViewOnly %>" model="<%= CommercePricingClass.class %>" name="title" required="<%= true %>" />
+					<aui:input bean="<%= commercePricingClass %>" disabled="<%= isViewOnly %>" label="name" model="<%= CommercePricingClass.class %>" name="title" required="<%= true %>" />
 
 					<aui:input localized="<%= true %>" name="description" type="textarea" value="<%= commercePricingClass.getDescription(locale) %>" />
 				</div>
@@ -52,14 +52,16 @@ boolean hasCustomAttributesAvailable = CustomAttributesUtil.hasCustomAttributes(
 	<div class="row">
 		<div class="col-12">
 			<c:if test="<%= hasCustomAttributesAvailable %>">
-				<aui:fieldset>
+				<commerce-ui:panel
+					title='<%= LanguageUtil.get(request, "custom-attributes") %>'
+				>
 					<liferay-expando:custom-attribute-list
 						className="<%= CommercePricingClass.class.getName() %>"
 						classPK="<%= (commercePricingClass != null) ? commercePricingClass.getCommercePricingClassId() : 0 %>"
 						editable="<%= true %>"
 						label="<%= true %>"
 					/>
-				</aui:fieldset>
+				</commerce-ui:panel>
 			</c:if>
 		</div>
 	</div>

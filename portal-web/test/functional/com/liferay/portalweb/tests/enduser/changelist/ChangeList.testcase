@@ -1,7 +1,7 @@
 @component-name = "portal-change-list"
 definition {
 
-	property portal.release = "false";
+	property portal.release = "true";
 	property portal.upstream = "true";
 	property testray.main.component.name = "Change List";
 
@@ -82,13 +82,25 @@ definition {
 			webContentTitle = "WC WebContent Title",
 			webContentTitleEdit = "WC WebContent Title");
 
-		ChangeList.prepareToPublish(publicationName = "Publication 2 Name");
+		ApplicationsMenu.gotoPortlet(
+			category = "Publications",
+			panel = "Applications",
+			portlet = "Publications");
+
+		Navigator.gotoNavTab(navTab = "Ongoing");
+
+		ChangeList.assertDiscardIsUnavailableForInactivePublication(
+			changeCategory = "Web Content Article",
+			changeTitle = "WC WebContent Title",
+			publicationName = "Publication Name");
+
+		ChangeList.gotoPublish(publicationName = "Publication 2 Name");
 
 		ChangeList.publishPublication(publicationName = "Publication 2 Name");
 
 		ChangeList.selectPublication(publicationName = "Publication Name");
 
-		ChangeList.prepareToPublish(
+		ChangeList.gotoPublish(
 			gotoManagePublications = "true",
 			publicationName = "Publication Name");
 
@@ -171,11 +183,21 @@ definition {
 			changeDescription = "Test Test deleted a Web Content Article in Guest",
 			changeTitle = "WC WebContent Title");
 
-		ChangeList.prepareToPublish(publicationName = "Publication Name");
+		ChangeList.gotoPublish(publicationName = "Publication Name");
 
 		ChangeList.publishPublication(publicationName = "Publication Name");
 
 		ChangeList.selectPublication(publicationName = "Publication 2 Name");
+
+		Navigator.gotoNavTab(navTab = "History");
+
+		ChangeListChanges.viewChangesViaChangesStyle(
+			changeCategory = "Web Content Article",
+			changeSite = "Guest",
+			changeTitle = "WC WebContent Title",
+			changeType = "Deleted",
+			changeUser = "Test Test",
+			publishedPublication = "true");
 
 		ChangeList.gotoReviewChanges();
 
@@ -191,7 +213,7 @@ definition {
 			changeDescription = "Test Test added a Web Content Article in Guest",
 			changeTitle = "WC WebContent Title 2 Edit");
 
-		ChangeList.prepareToPublish(publicationName = "Publication 2 Name");
+		ChangeList.gotoPublish(publicationName = "Publication 2 Name");
 
 		ChangeList.viewNeedsManualResolution(
 			entryTitle = "Test Test modified a Asset",
@@ -210,6 +232,156 @@ definition {
 			columnValueInPublication = "2",
 			entryTitle = "Test Test modified a Asset",
 			publicationName = "Publication 2 Name");
+
+		IFrame.closeFrame();
+
+		ChangeList.discardChanges(
+			changeCategory = "Asset",
+			changeTitle = "WC WebContent Title 2 Edit",
+			conflictingChanges = "true",
+			entryTitle = "Test Test modified a Asset");
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Web Content");
+
+		WebContent.viewNotPresentCP(webContentTitle = "WC WebContent Title 2 Edit");
+
+		WebContent.viewNotPresentCP(webContentTitle = "WC WebContent Title");
+
+		ChangeList.gotoPublish(publicationName = "Publication 2 Name");
+
+		ChangeList.publishPublication(publicationName = "Publication 2 Name");
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Web Content");
+
+		AssertTextEquals(
+			locator1 = "Message#EMPTY_INFO",
+			value1 = "No web content was found.");
+	}
+
+	@priority = "4"
+	test DiscardSubsetsofChangesInPublication {
+		property test.name.skip.portal.instance = "ChangeList#DiscardSubsetsofChangesInPublication";
+
+		ChangeList.createNewPublication(publicationName = "Publication Name");
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Web Content");
+
+		WebContentNavigator.gotoAddCP();
+
+		WebContent.addCP(
+			webContentContent = "WC WebContent Content",
+			webContentTitle = "WC WebContent Title");
+
+		PortletEntry.publish();
+
+		NavItem.gotoStructures();
+
+		WebContentStructures.addCP(
+			structureDescription = "WC Structure Description",
+			structureName = "WC Structure Name");
+
+		DynamicDataMapping.addField(
+			field = "Text",
+			fieldFieldLabel = "Text",
+			fieldName = "Text");
+
+		WebContentStructures.saveCP(structureName = "WC Structure Name");
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Web Content");
+
+		NavItem.gotoTemplates();
+
+		WebContentTemplates.addCP(
+			structureName = "WC Structure Name",
+			templateDescription = "WC Template Description",
+			templateFieldNames = "Text",
+			templateName = "WC Template Name");
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Web Content");
+
+		WebContentNavigator.gotoAddWithStructureCP(structureName = "WC Structure Name");
+
+		WebContent.addWithStructureCP(
+			structureName = "WC Structure Name",
+			templateName = "WC Template Name",
+			webContentText = "WC WebContent Text",
+			webContentTitle = "WC WebContent Title 1");
+
+		PortletEntry.publish();
+
+		ChangeList.gotoReviewChanges();
+
+		ChangeList.discardChanges(
+			changeCategory = "Dynamic Data Mapping Structure",
+			changeTitle = "WC Structure Name");
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Web Content");
+
+		WebContent.viewNotPresentCP(webContentTitle = "WC WebContent Title 2 Edit");
+
+		WebContent.viewTitle(webContentTitle = "WC WebContent Title");
+
+		NavItem.gotoStructures();
+
+		AssertElementNotPresent(
+			key_ddlDataDefinitionName = "WC Structure Name",
+			locator1 = "DDMSelectStructure#DDM_STRUCTURE_TABLE_NAME");
+
+		NavItem.gotoTemplates();
+
+		AssertElementNotPresent(
+			key_ddlTemplateName = "WC Template Name",
+			locator1 = "DDMSelectTemplate#TEMPLATE_TABLE_NAME");
+
+		ChangeList.gotoPublish(publicationName = "Publication Name");
+
+		ChangeList.publishPublication(publicationName = "Publication Name");
+
+		Navigator.openURL();
+
+		ProductMenu.gotoPortlet(
+			category = "Content &amp; Data",
+			portlet = "Web Content");
+
+		WebContent.viewNotPresentCP(webContentTitle = "WC WebContent Title 2 Edit");
+
+		WebContent.viewTitle(webContentTitle = "WC WebContent Title");
+
+		NavItem.gotoStructures();
+
+		AssertElementNotPresent(
+			key_ddlDataDefinitionName = "WC Structure Name",
+			locator1 = "DDMSelectStructure#DDM_STRUCTURE_TABLE_NAME");
+
+		NavItem.gotoTemplates();
+
+		AssertElementNotPresent(
+			key_ddlTemplateName = "WC Template Name",
+			locator1 = "DDMSelectTemplate#TEMPLATE_TABLE_NAME");
 	}
 
 	@priority = "5"
@@ -266,13 +438,13 @@ definition {
 
 		PortletEntry.publish();
 
-		ChangeList.prepareToPublish(publicationName = "Publication 2 Name");
+		ChangeList.gotoPublish(publicationName = "Publication 2 Name");
 
 		ChangeList.publishPublication(publicationName = "Publication 2 Name");
 
 		ChangeList.selectPublication(publicationName = "Publication Name");
 
-		ChangeList.prepareToPublish(publicationName = "Publication Name");
+		ChangeList.gotoPublish(publicationName = "Publication Name");
 
 		ChangeList.publishPublication(publicationName = "Publication Name");
 
@@ -315,7 +487,7 @@ definition {
 
 		PortletEntry.publish();
 
-		ChangeList.prepareToPublish(publicationName = "Publication Name");
+		ChangeList.gotoPublish(publicationName = "Publication Name");
 
 		ChangeList.publishPublication(publicationName = "Publication Name");
 
@@ -391,7 +563,7 @@ definition {
 
 		SitePages.addPublicPage(pageName = "Cherry");
 
-		ChangeList.prepareToPublish(publicationName = "Cherry");
+		ChangeList.gotoPublish(publicationName = "Cherry");
 
 		ChangeList.publishPublication(publicationName = "Cherry");
 
@@ -405,7 +577,7 @@ definition {
 
 		SitePages.addPublicPage(pageName = "Banana");
 
-		ChangeList.prepareToPublish(publicationName = "Banana");
+		ChangeList.gotoPublish(publicationName = "Banana");
 
 		ChangeList.publishPublication(publicationName = "Banana");
 
@@ -419,7 +591,7 @@ definition {
 
 		SitePages.addPublicPage(pageName = "Apple");
 
-		ChangeList.prepareToPublish(publicationName = "Apple");
+		ChangeList.gotoPublish(publicationName = "Apple");
 
 		ChangeList.publishPublication(publicationName = "Apple");
 

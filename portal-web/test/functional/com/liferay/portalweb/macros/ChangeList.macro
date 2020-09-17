@@ -1,5 +1,18 @@
 definition {
 
+	macro assertDiscardIsUnavailableForInactivePublication {
+		Click(
+			key_publicationName = "${publicationName}",
+			locator1 = "ChangeList#PUBLISHED_PUBLICATIONS_NAME");
+
+		Click(
+			key_changeCategory = "${changeCategory}",
+			key_changeTitle = "${changeTitle}",
+			locator1 = "ChangeListChanges#CHANGES_CHANGE_TITLE");
+
+		AssertElementNotPresent(locator1 = "ChangeListChanges#CHANGES_ELLIPSIS");
+	}
+
 	macro cancelPublicationCreation {
 		ApplicationsMenu.gotoPortlet(
 			category = "Publications",
@@ -71,6 +84,42 @@ definition {
 		Alert.viewSuccessMessage();
 	}
 
+	macro discardChanges {
+		if ("${conflictingChanges}" == "true") {
+			Click(
+				key_entryTitle = "${entryTitle}",
+				locator1 = "ChangeList#CONFICTING_CHANGES_DISCARD_BUTTON",
+				value1 = "Discard");
+		}
+		else {
+			Click(
+				key_changeCategory = "${changeCategory}",
+				key_changeTitle = "${changeTitle}",
+				locator1 = "ChangeListChanges#CHANGES_CHANGE_TITLE");
+
+			Click(locator1 = "ChangeListChanges#CHANGES_ELLIPSIS");
+
+			MenuItem.click(menuItem = "Discard");
+		}
+
+		Pause(locator1 = "3000");
+
+		AssertElementPresent(locator1 = "ChangeList#DISCARDED_CHANGES_TITLE");
+
+		key_changeCategory = "${changeCategory}";
+		key_changeTitle = "${changeTitle}";
+
+		AssertTextEquals.assertPartialText(
+			locator1 = "ChangeListChanges#CONTEXT_CHANGE_TITLE",
+			value1 = "${changeTitle}");
+
+		Click(
+			key_text = "Discard",
+			locator1 = "Button#ANY");
+
+		Alert.viewSuccessMessage();
+	}
+
 	macro enablePublications {
 		Pause(locator1 = "2000");
 
@@ -84,6 +133,26 @@ definition {
 		}
 
 		Alert.viewSuccessMessage();
+	}
+
+	macro gotoPublish {
+		if ("${gotoManagePublications}" == "true") {
+			ApplicationsMenu.gotoPortlet(
+				category = "Publications",
+				panel = "Applications",
+				portlet = "Publications");
+
+			LexiconEntry.changeDisplayStyle(displayStyle = "list");
+
+			Click(
+				key_publicationName = "${publicationName}",
+				locator1 = "ChangeList#LIST_PUBLICATION_ELLIPSIS");
+		}
+		else {
+			Click(locator1 = "ChangeList#CHANGE_LIST_INDICATOR_BUTTON");
+		}
+
+		MenuItem.click(menuItem = "Publish");
 	}
 
 	macro gotoReviewChanges {
@@ -109,26 +178,6 @@ definition {
 			locator1 = "IFrame#IFRAME_TITLE");
 
 		SelectFrame(locator1 = "IFrame#MODAL_BODY");
-	}
-
-	macro prepareToPublish {
-		if ("${gotoManagePublications}" == "true") {
-			ApplicationsMenu.gotoPortlet(
-				category = "Publications",
-				panel = "Applications",
-				portlet = "Publications");
-
-			LexiconEntry.changeDisplayStyle(displayStyle = "list");
-
-			Click(
-				key_publicationName = "${publicationName}",
-				locator1 = "ChangeList#LIST_PUBLICATION_ELLIPSIS");
-		}
-		else {
-			Click(locator1 = "ChangeList#CHANGE_LIST_INDICATOR_BUTTON");
-		}
-
-		MenuItem.click(menuItem = "Prepare to Publish");
 	}
 
 	macro publishPublication {
@@ -271,17 +320,6 @@ definition {
 		AssertVisible(locator1 = "ChangeList#DISABLED_PUBLISH_BUTTON");
 	}
 
-	macro viewNoStagingMenuitemsNotAvailable {
-		AssertElementNotPresent(locator1 = "Icon#HEADER_VERTICAL_ELLIPSIS");
-
-		ProductMenu.gotoPortlet(
-			category = "Publishing",
-			portlet = "Staging",
-			site = "${site}");
-
-		Alert.viewWarningSpecific(warningMessage = "Change lists are enabled for the current virtual instance. Staging and change lists cannot be used together.");
-	}
-
 	macro viewPublishedPublicationDetails {
 		key_publicationName = "${publicationName}";
 
@@ -292,47 +330,6 @@ definition {
 		AssertElementPresent(
 			key_publicationPublishedBy = "${publicationPublishedBy}",
 			locator1 = "ChangeList#PUBLICATIONS_PUBLISHED_BY");
-	}
-
-	macro viewWarningOnPortletExport {
-		ProductMenu.gotoPortlet(
-			category = "Content &amp; Data",
-			portlet = "${portletName}",
-			site = "${site}");
-
-		LAR._gotoExportImport();
-
-		SelectFrame(locator1 = "IFrame#CONFIGURATION_DIALOG");
-
-		Alert.viewWarningSpecific(warningMessage = "Change lists are enabled for the current virtual instance. Export/Import and change lists cannot be used together.");
-
-		IFrame.closeFrame();
-	}
-
-	macro viewWarningOnPortletImport {
-		ProductMenu.gotoPortlet(
-			category = "Content &amp; Data",
-			portlet = "${portletName}",
-			site = "${site}");
-
-		LAR._gotoExportImport();
-
-		SelectFrame(locator1 = "IFrame#CONFIGURATION_DIALOG");
-
-		NavItem.click(navItem = "Import");
-
-		Alert.viewWarningSpecific(warningMessage = "Change lists are enabled for the current virtual instance. Export/Import and change lists cannot be used together.");
-
-		IFrame.closeFrame();
-	}
-
-	macro viewWarningOnSiteExportImport {
-		ProductMenu.gotoPortlet(
-			category = "Publishing",
-			portlet = "${portletName}",
-			site = "${site}");
-
-		Alert.viewWarningSpecific(warningMessage = "Change lists are enabled for the current virtual instance. Export/Import and change lists cannot be used together.");
 	}
 
 	macro workOnProduction {

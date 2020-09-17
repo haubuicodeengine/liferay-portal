@@ -26,10 +26,6 @@ portletURL.setParameter("searchContainerId", "commercePriceLists");
 request.setAttribute("view.jsp-portletURL", portletURL);
 %>
 
-<clay:navigation-bar
-	navigationItems="<%= PricingNavigationItemRegistryUtil.getNavigationItems(renderRequest) %>"
-/>
-
 <liferay-util:include page="/toolbar.jsp" servletContext="<%= application %>">
 	<liferay-util:param name="searchContainerId" value="commercePriceLists" />
 </liferay-util:include>

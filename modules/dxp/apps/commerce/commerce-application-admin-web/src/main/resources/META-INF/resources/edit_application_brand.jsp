@@ -20,11 +20,9 @@
 CommerceApplicationAdminDisplayContext commerceApplicationAdminDisplayContext = (CommerceApplicationAdminDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
 
 CommerceApplicationBrand commerceApplicationBrand = commerceApplicationAdminDisplayContext.getCommerceApplicationBrand();
-%>
 
-<clay:navigation-bar
-	navigationItems="<%= CPNavigationItemRegistryUtil.getNavigationItems(renderRequest) %>"
-/>
+renderResponse.setTitle(LanguageUtil.get(request, "applications"));
+%>
 
 <liferay-frontend:screen-navigation
 	containerCssClass="col-md-10"

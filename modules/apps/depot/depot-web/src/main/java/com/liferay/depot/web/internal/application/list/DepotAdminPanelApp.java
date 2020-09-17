@@ -17,12 +17,9 @@ package com.liferay.depot.web.internal.application.list;
 import com.liferay.application.list.BasePanelApp;
 import com.liferay.application.list.PanelApp;
 import com.liferay.application.list.constants.PanelCategoryKeys;
-import com.liferay.depot.configuration.DepotConfiguration;
 import com.liferay.depot.web.internal.constants.DepotPortletKeys;
-import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.Portlet;
-import com.liferay.portal.kernel.security.permission.PermissionChecker;
 import com.liferay.portal.kernel.theme.ThemeDisplay;
 import com.liferay.portal.kernel.util.WebKeys;
 
@@ -50,17 +47,6 @@ public class DepotAdminPanelApp extends BasePanelApp {
 	}
 
 	@Override
-	public boolean isShow(PermissionChecker permissionChecker, Group group)
-		throws PortalException {
-
-		if (!_depotConfiguration.isEnabled()) {
-			return false;
-		}
-
-		return super.isShow(permissionChecker, group);
-	}
-
-	@Override
 	@Reference(
 		target = "(javax.portlet.name=" + DepotPortletKeys.DEPOT_ADMIN + ")",
 		unbind = "-"
@@ -77,8 +63,5 @@ public class DepotAdminPanelApp extends BasePanelApp {
 
 		return themeDisplay.getControlPanelGroup();
 	}
-
-	@Reference
-	private DepotConfiguration _depotConfiguration;
 
 }

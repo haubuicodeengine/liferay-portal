@@ -119,6 +119,47 @@
 	<td>//div[contains(@class,'page-editor__topper__bar') and contains(.,'${key_fragmentName}')]//button[*[name()='svg'][contains(@class,'icon-comments')]]</td>
 	<td></td>
 </tr>
+<!--CUSTOM_FRAGMENT_STYLE-->
+<tr>
+	<td>ALIGN</td>
+	<td>//div[contains(@class,'video')]/parent::div[contains(@style,'justify-content: ${key_alignment}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BOTTOM_SPACING</td>
+	<td>//div[contains(@class,'component-separator')]/hr[contains(@class,'pb-${key_bottomSpacing}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>BUTTON_SIZE</td>
+	<td>//div[contains(@class,'component-button')]/a[contains(@class,'btn-${key_size}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>IMAGE_SIZE</td>
+	<td>//div[contains(@class,'component-${key_fragmentName}')]//img[contains(@class,'w-${key_imageSize}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SEPARATOR_COLOR</td>
+	<td>//div[contains(@class,'component-separator')]/hr[contains(@class,'border-${key_separatorColor}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>SPACER_HEIGHT</td>
+	<td>//div[contains(@id,'fragment')]/div[contains(@class,'py-${key_height}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>VIDEO_HEIGHT</td>
+	<td>//div[contains(@class,'video')][contains(@style,'height: ${key_height}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>VIDEO_WIDTH</td>
+	<td>//div[contains(@class,'video')][contains(@style,'width: ${key_width}')]</td>
+	<td></td>
+</tr>
 <!--FRAGMENT_CONFIGURAION-->
 <tr>
 	<td>FRAGMENT_CHECKBOX</td>
@@ -143,11 +184,6 @@
 <tr>
 	<td>FRAGMENT_CONFIGURATION_BORDER_RADIUS</td>
 	<td>//div[contains(@class,'page-editor__topper__bar') and contains(.,'${key_fragmentName}')]/following-sibling::div[contains(@class,'page-editor__topper__content')]//div[contains(@style,'border-radius: var(--${key_borderRadius})')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FRAGMENT_CONFIGURATION_BOTTOM_SPACING</td>
-	<td>//div[contains(@class,'component-${key_fragmentName}')]//hr[contains(@class,'pb-${key_bottomSpacing}')]</td>
 	<td></td>
 </tr>
 <tr>
@@ -201,21 +237,6 @@
 	<td></td>
 </tr>
 <tr>
-	<td>FRAGMENT_CONFIGURATION_HEIGHT</td>
-	<td>//div[contains(@class,'page-editor__topper__content')]//div//div[contains(@class,'py-${key_height}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FRAGMENT_CONFIGURATION_IMAGE_SIZE</td>
-	<td>//div[contains(@class,'component-${key_fragmentName}')]//img[contains(@class,'w-${key_imageSize}')]</td>
-	<td></td>
-</tr>
-<tr>
-	<td>FRAGMENT_CONFIGURATION_SIZE</td>
-	<td>//div[contains(@class,'component-${key_fragmentName}')]//a[contains(@class,'-${key_size}')]</td>
-	<td></td>
-</tr>
-<tr>
 	<td>FRAGMENT_CONFIGURATION_TEXT_COLOR</td>
 	<td>//div[contains(@class,'page-editor__topper__bar') and contains(.,'${key_fragmentName}')]/following-sibling::div[contains(@class,'page-editor__topper__content')]//div[contains(@style,'color: var(--${key_textColor})')]</td>
 	<td></td>
@@ -223,6 +244,32 @@
 <tr>
 	<td>FRAGMENT_CONFIGURATION_TYPE</td>
 	<td>//div[contains(@class,'component-${key_fragmentName}')]//a[contains(@class,'-${key_type}')]</td>
+	<td></td>
+</tr>
+<!--FRAGMENT_CONFIGURATION_IN_VIEW_MODE-->
+<tr>
+	<td>FRAGMENT_CONFIGURATION_ALIGNMENT_IN_VIEW_MODE</td>
+	<td>//*[contains(@class,'${key_fragmentName}')]/parent::div/parent::div[contains(@class,'text-${key_alignment}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>FRAGMENT_CONFIGURATION_BORDER_RADIUS_IN_VIEW_MODE</td>
+	<td>//*[contains(@class,'${key_fragmentName}')]/parent::div/parent::div[contains(@style,'border-radius: ${key_borderRadius}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>FRAGMENT_CONFIGURATION_BOX_SHADOW_IN_VIEW_MODE</td>
+	<td>//*[contains(@class,'${key_fragmentName}')]/parent::div/parent::div[contains(@style,'box-shadow: ${key_boxShadow}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>FRAGMENT_CONFIGURATION_MARGIN_BOTTOM_IN_VIEW_MODE</td>
+	<td>//*[contains(@class,'${key_fragmentName}')]/parent::div/parent::div[contains(@class,'mb-${key_marginBottom}')]</td>
+	<td></td>
+</tr>
+<tr>
+	<td>FRAGMENT_CONFIGURATION_TEXT_COLOR_IN_VIEW_MODE</td>
+	<td>//*[contains(@class,'${key_fragmentName}')]/parent::div/parent::div[contains(@style,'color: ${key_textColor}')]</td>
 	<td></td>
 </tr>
 <!--FRAGMENT_EDITABLE_FIELD-->

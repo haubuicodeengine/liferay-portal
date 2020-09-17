@@ -20,11 +20,9 @@
 CommerceApplicationAdminDisplayContext commerceApplicationAdminDisplayContext = (CommerceApplicationAdminDisplayContext)request.getAttribute(WebKeys.PORTLET_DISPLAY_CONTEXT);
 
 CommerceApplicationModel commerceApplicationModel = commerceApplicationAdminDisplayContext.getCommerceApplicationModel();
-%>
 
-<clay:navigation-bar
-	navigationItems="<%= CPNavigationItemRegistryUtil.getNavigationItems(renderRequest) %>"
-/>
+renderResponse.setTitle(LanguageUtil.get(request, "applications"));
+%>
 
 <portlet:actionURL name="editCommerceApplicationModel" var="editCommerceApplicationModelActionURL" />
 

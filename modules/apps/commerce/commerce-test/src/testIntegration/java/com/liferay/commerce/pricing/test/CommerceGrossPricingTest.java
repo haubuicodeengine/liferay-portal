@@ -27,7 +27,6 @@ import com.liferay.commerce.context.CommerceContext;
 import com.liferay.commerce.currency.model.CommerceCurrency;
 import com.liferay.commerce.currency.model.CommerceMoney;
 import com.liferay.commerce.currency.test.util.CommerceCurrencyTestUtil;
-import com.liferay.commerce.discount.service.CommerceDiscountLocalServiceUtil;
 import com.liferay.commerce.price.CommerceProductPrice;
 import com.liferay.commerce.price.CommerceProductPriceCalculation;
 import com.liferay.commerce.price.list.model.CommercePriceEntry;
@@ -56,11 +55,14 @@ import com.liferay.commerce.tax.service.CommerceTaxMethodLocalService;
 import com.liferay.commerce.test.util.CommerceTaxTestUtil;
 import com.liferay.commerce.test.util.CommerceTestUtil;
 import com.liferay.commerce.test.util.TestCommerceContext;
+import com.liferay.portal.kernel.model.Company;
 import com.liferay.portal.kernel.model.Group;
 import com.liferay.portal.kernel.model.User;
 import com.liferay.portal.kernel.service.ServiceContext;
 import com.liferay.portal.kernel.test.rule.AggregateTestRule;
+import com.liferay.portal.kernel.test.rule.DataGuard;
 import com.liferay.portal.kernel.test.rule.DeleteAfterTestRun;
+import com.liferay.portal.kernel.test.util.CompanyTestUtil;
 import com.liferay.portal.kernel.test.util.GroupTestUtil;
 import com.liferay.portal.kernel.test.util.RandomTestUtil;
 import com.liferay.portal.kernel.test.util.ServiceContextTestUtil;
@@ -90,6 +92,7 @@ import org.junit.runner.RunWith;
 /**
  * @author Riccardo Alberti
  */
+@DataGuard(scope = DataGuard.Scope.NONE)
 @RunWith(Arquillian.class)
 public class CommerceGrossPricingTest {
 
@@ -101,9 +104,12 @@ public class CommerceGrossPricingTest {
 
 	@Before
 	public void setUp() throws Exception {
-		_group = GroupTestUtil.addGroup();
+		_company = CompanyTestUtil.addCompany();
 
-		_user = UserTestUtil.addUser();
+		_user = UserTestUtil.addUser(_company);
+
+		_group = GroupTestUtil.addGroup(
+			_company.getCompanyId(), _user.getUserId(), 0);
 
 		_commerceAccount =
 			_commerceAccountLocalService.getPersonalCommerceAccount(
@@ -118,10 +124,10 @@ public class CommerceGrossPricingTest {
 			_group.getCompanyId());
 
 		_serviceContext = ServiceContextTestUtil.getServiceContext(
-			_user.getCompanyId(), _user.getGroupId(), _user.getUserId());
+			_company.getCompanyId(), _group.getGroupId(), _user.getUserId());
 
 		_commerceChannel = CommerceTestUtil.addCommerceChannel(
-			_commerceCurrency.getCode());
+			_group.getGroupId(), _commerceCurrency.getCode());
 
 		_rate = 22;
 
@@ -145,19 +151,6 @@ public class CommerceGrossPricingTest {
 	public void tearDown() throws Exception {
 		_commerceTaxMethodLocalService.deleteCommerceTaxMethod(
 			_commerceTaxMethod.getCommerceTaxMethodId());
-
-		CommerceDiscountLocalServiceUtil.deleteCommerceDiscounts(
-			_user.getCompanyId());
-
-		_commerceAccountLocalService.deleteCommerceAccount(
-			_commerceAccount.getCommerceAccountId());
-
-		_commerceAccountGroupCommerceAccountRelLocalService.
-			deleteCommerceAccountGroupCommerceAccountRelByCAccountGroupId(
-				_commerceAccount.getCommerceAccountId());
-
-		_commerceAccountGroupLocalService.deleteCommerceAccountGroup(
-			_commerceAccountGroup.getCommerceAccountGroupId());
 	}
 
 	@Test
@@ -199,16 +192,16 @@ public class CommerceGrossPricingTest {
 
 		_cpDefinitionLocalService.updateCPDefinition(cpDefinition);
 
-		double netPrice = 20;
+		double netPrice1 = 20;
 
-		double grossPrice = netPrice * _factor;
+		double grossPrice1 = netPrice1 * _factor;
 
-		BigDecimal price = BigDecimal.valueOf(grossPrice);
+		BigDecimal price1 = BigDecimal.valueOf(grossPrice1);
 
 		CommercePriceEntry commercePriceEntry =
 			CommercePriceEntryTestUtil.addCommercePriceEntry(
 				cpDefinition.getCProductId(), cpInstance.getCPInstanceUuid(),
-				commercePriceList.getCommercePriceListId(), "", price, false,
+				commercePriceList.getCommercePriceListId(), "", price1, false,
 				null, null, null, null, true, true);
 
 		double netPrice5 = 15;
@@ -248,12 +241,13 @@ public class CommerceGrossPricingTest {
 		BigDecimal finalPrice = finalPriceMoney.getPrice();
 		BigDecimal finalGrossPrice = finalGrossPriceMoney.getPrice();
 
-		BigDecimal expectedNetPrice = BigDecimal.valueOf(netPrice);
+		BigDecimal expectedNetPrice1 = BigDecimal.valueOf(netPrice1);
 
-		BigDecimal expectedNet = expectedNetPrice.multiply(
+		BigDecimal expectedNet = expectedNetPrice1.multiply(
 			BigDecimal.valueOf(quantity));
 
-		BigDecimal expectedGross = price.multiply(BigDecimal.valueOf(quantity));
+		BigDecimal expectedGross = price1.multiply(
+			BigDecimal.valueOf(quantity));
 
 		finalGrossPrice = finalGrossPrice.setScale(
 			expectedGross.scale(),
@@ -762,20 +756,21 @@ public class CommerceGrossPricingTest {
 			cpDefinition.getCProductId(), cpInstance.getCPInstanceUuid(),
 			basePriceList.getCommercePriceListId(), "", price1);
 
-		CommercePriceModifier commercePriceModifier = _addCommercePriceModifier(
-			commercePriceList1.getGroupId(),
-			CommercePriceModifierConstants.TARGET_PRODUCT_GROUPS,
-			commercePriceList1.getCommercePriceListId(),
-			CommercePriceModifierConstants.MODIFIER_TYPE_PERCENTAGE,
-			BigDecimal.valueOf(-10), true);
+		CommercePriceModifier commercePriceModifier1 =
+			_addCommercePriceModifier(
+				commercePriceList1.getGroupId(),
+				CommercePriceModifierConstants.TARGET_PRODUCT_GROUPS,
+				commercePriceList1.getCommercePriceListId(),
+				CommercePriceModifierConstants.MODIFIER_TYPE_PERCENTAGE,
+				BigDecimal.valueOf(-10), true);
 
 		_commercePriceModifierRelLocalService.addCommercePriceModifierRel(
-			commercePriceModifier.getCommercePriceModifierId(),
+			commercePriceModifier1.getCommercePriceModifierId(),
 			CommercePricingClass.class.getName(),
 			commercePricingClass.getCommercePricingClassId(),
 			ServiceContextTestUtil.getServiceContext());
 
-		CommercePriceModifier commercePriceModifier1 =
+		CommercePriceModifier commercePriceModifier2 =
 			_addCommercePriceModifier(
 				commercePriceList1.getGroupId(),
 				CommercePriceModifierConstants.TARGET_CATEGORIES,
@@ -784,7 +779,7 @@ public class CommerceGrossPricingTest {
 				BigDecimal.valueOf(19), true);
 
 		_commercePriceModifierRelLocalService.addCommercePriceModifierRel(
-			commercePriceModifier1.getCommercePriceModifierId(),
+			commercePriceModifier2.getCommercePriceModifierId(),
 			AssetCategory.class.getName(), assetCategory.getCategoryId(),
 			ServiceContextTestUtil.getServiceContext());
 
@@ -956,16 +951,16 @@ public class CommerceGrossPricingTest {
 
 		_cpDefinitionLocalService.updateCPDefinition(cpDefinition);
 
-		double netPrice = 50;
+		double netPrice1 = 50;
 
-		double grossPrice = netPrice * _factor;
+		double grossPrice1 = netPrice1 * _factor;
 
-		BigDecimal price = BigDecimal.valueOf(grossPrice);
+		BigDecimal price1 = BigDecimal.valueOf(grossPrice1);
 
 		CommercePriceEntry commercePriceEntry =
 			CommercePriceEntryTestUtil.addCommercePriceEntry(
 				cpDefinition.getCProductId(), cpInstance.getCPInstanceUuid(),
-				commercePriceList.getCommercePriceListId(), "", price, false,
+				commercePriceList.getCommercePriceListId(), "", price1, false,
 				null, null, null, null, true, true);
 
 		double netPrice5 = 40;
@@ -1000,7 +995,7 @@ public class CommerceGrossPricingTest {
 
 		BigDecimal finalPrice = finalPriceMoney.getPrice();
 
-		BigDecimal expectedNetPrice = BigDecimal.valueOf(netPrice);
+		BigDecimal expectedNetPrice = BigDecimal.valueOf(netPrice1);
 
 		finalPrice = finalPrice.setScale(
 			expectedNetPrice.scale(),
@@ -1073,17 +1068,17 @@ public class CommerceGrossPricingTest {
 
 		_cpDefinitionLocalService.updateCPDefinition(cpDefinition);
 
-		BigDecimal price = BigDecimal.valueOf(20);
+		BigDecimal price1 = BigDecimal.valueOf(20);
 
-		double netPrice = 15;
+		double netPrice1 = 15;
 
-		double grossPrice = netPrice * _factor;
+		double grossPrice1 = netPrice1 * _factor;
 
-		BigDecimal promoPrice = BigDecimal.valueOf(grossPrice);
+		BigDecimal promoPrice = BigDecimal.valueOf(grossPrice1);
 
 		CommercePriceEntryTestUtil.addCommercePriceEntry(
 			cpDefinition.getCProductId(), cpInstance.getCPInstanceUuid(),
-			commercePriceList.getCommercePriceListId(), "", price, false, null,
+			commercePriceList.getCommercePriceListId(), "", price1, false, null,
 			null, null, null, true, true);
 
 		CommercePriceEntry commercePromoEntry =
@@ -1130,7 +1125,7 @@ public class CommerceGrossPricingTest {
 
 		BigDecimal finalPrice = finalPriceMoney.getPrice();
 
-		BigDecimal expectedPromoPrice = BigDecimal.valueOf(netPrice);
+		BigDecimal expectedPromoPrice = BigDecimal.valueOf(netPrice1);
 
 		finalPrice = finalPrice.setScale(
 			expectedPromoPrice.scale(),
@@ -1242,14 +1237,14 @@ public class CommerceGrossPricingTest {
 
 		BigDecimal commercePrice1 = commerceMoney1.getPrice();
 
-		BigDecimal expectedNetPrice = BigDecimal.valueOf(netPrice1);
+		BigDecimal expectedNetPrice1 = BigDecimal.valueOf(netPrice1);
 
 		commercePrice1 = commercePrice1.setScale(
-			expectedNetPrice.scale(),
+			expectedNetPrice1.scale(),
 			RoundingMode.valueOf(_commerceCurrency.getRoundingMode()));
 
 		Assert.assertEquals(
-			expectedNetPrice.stripTrailingZeros(),
+			expectedNetPrice1.stripTrailingZeros(),
 			commercePrice1.stripTrailingZeros());
 
 		int quantity = 10;
@@ -1616,11 +1611,11 @@ public class CommerceGrossPricingTest {
 			_commerceAccount.getCommerceAccountId(), 0,
 			ServiceContextTestUtil.getServiceContext());
 
-		double netPromoPrice = 10;
+		double netPromoPrice1 = 10;
 
-		double grossPromoPrice = netPromoPrice * _factor;
+		double grossPromoPrice1 = netPromoPrice1 * _factor;
 
-		BigDecimal promoPrice = BigDecimal.valueOf(grossPromoPrice);
+		BigDecimal promoPrice = BigDecimal.valueOf(grossPromoPrice1);
 
 		CommercePriceEntry commercePromotionEntry =
 			CommercePriceEntryTestUtil.addCommercePriceEntry(
@@ -1707,9 +1702,7 @@ public class CommerceGrossPricingTest {
 	@Inject
 	private CommerceCatalogLocalService _commerceCatalogLocalService;
 
-	@DeleteAfterTestRun
 	private CommerceChannel _commerceChannel;
-
 	private CommerceCurrency _commerceCurrency;
 
 	@Inject
@@ -1740,14 +1733,14 @@ public class CommerceGrossPricingTest {
 	@Inject
 	private CommerceTaxMethodLocalService _commerceTaxMethodLocalService;
 
+	@DeleteAfterTestRun
+	private Company _company;
+
 	@Inject
 	private CPDefinitionLocalService _cpDefinitionLocalService;
 
 	private double _factor;
-
-	@DeleteAfterTestRun
 	private Group _group;
-
 	private double _rate;
 	private ServiceContext _serviceContext;
 

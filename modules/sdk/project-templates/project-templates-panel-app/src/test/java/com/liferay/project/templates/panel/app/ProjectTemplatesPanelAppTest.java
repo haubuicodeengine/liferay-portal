@@ -99,8 +99,6 @@ public class ProjectTemplatesPanelAppTest
 		testContains(
 			gradleProjectDir, "bnd.bnd",
 			"Export-Package: gradle.test.constants");
-		testContains(
-			gradleProjectDir, "build.gradle", DEPENDENCY_RELEASE_PORTAL_API);
 
 		Version version = Version.parseVersion(_liferayVersion);
 
@@ -108,8 +106,14 @@ public class ProjectTemplatesPanelAppTest
 
 		if (versionRange.includes(version)) {
 			testContains(
-				gradleProjectDir, "build.gradle", DEPENDENCY_JAVAX_PORTLET_API,
-				DEPENDENCY_JAVAX_SERVLET_API, DEPENDENCY_ORG_OSGI_ANNOTATIONS);
+				gradleProjectDir, "build.gradle", DEPENDENCY_PORTAL_KERNEL,
+				DEPENDENCY_JAVAX_PORTLET_API, DEPENDENCY_JAVAX_SERVLET_API,
+				DEPENDENCY_ORG_OSGI_ANNOTATIONS);
+		}
+		else {
+			testContains(
+				gradleProjectDir, "build.gradle",
+				DEPENDENCY_RELEASE_PORTAL_API);
 		}
 
 		testContains(

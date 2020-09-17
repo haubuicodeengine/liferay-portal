@@ -1,6 +1,14 @@
 .data-set-display {
 	.data-set-display-management-bar-wrapper {
 		border-bottom: 1px solid $border-color;
+
+		& > .management-bar {
+			margin-bottom: 0;
+
+			& + .management-bar {
+				border-top: 1px solid #eee;
+			}
+		}
 	}
 
 	.data-set-sub-item {
@@ -39,25 +47,6 @@
 		.table-cell-data-wrapper {
 			background-color: #f0f5ff;
 		}
-	}
-
-	.main-input-wrapper {
-		position: relative;
-	}
-
-	.main-input-search {
-		padding-right: map-get($spacers, 5) !important;
-		width: 100%;
-	}
-
-	.main-input-reset-button {
-		color: currentColor;
-		height: 100%;
-		position: absolute;
-		right: 0;
-		text-align: center;
-		top: 0;
-		width: map-get($spacers, 5);
 	}
 
 	.table {
@@ -139,16 +128,12 @@
 	}
 
 	&.data-set-display-inline {
+		.data-set-display-pagination-wrapper {
+			padding-top: 0.5rem;
+		}
+
 		.table {
 			border-bottom: 1px solid $border-color;
-		}
-	}
-
-	&.data-set-display-management-bar-wrapper > .management-bar {
-		margin-bottom: 0;
-
-		& + .management-bar {
-			border-top: 1px solid #eee;
 		}
 	}
 
@@ -254,7 +239,7 @@
 		opacity: 0.5;
 	}
 
-	&.filter-resume-content {
+	.filter-resume-content {
 		display: flex;
 	}
 }

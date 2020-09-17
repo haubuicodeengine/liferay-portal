@@ -93,9 +93,6 @@ public class ProjectTemplatesServiceWrapperTest
 
 		testExists(gradleProjectDir, "bnd.bnd");
 
-		testContains(
-			gradleProjectDir, "build.gradle", DEPENDENCY_RELEASE_PORTAL_API);
-
 		Version version = Version.parseVersion(_liferayVersion);
 
 		VersionRange versionRange = new VersionRange("[7.0,7.3)");
@@ -104,6 +101,11 @@ public class ProjectTemplatesServiceWrapperTest
 			testContains(
 				gradleProjectDir, "build.gradle",
 				DEPENDENCY_ORG_OSGI_ANNOTATIONS);
+		}
+		else {
+			testContains(
+				gradleProjectDir, "build.gradle",
+				DEPENDENCY_RELEASE_PORTAL_API);
 		}
 
 		testContains(

@@ -56,6 +56,7 @@ public class ProjectGenerator {
 		String groupId = projectTemplatesArgs.getGroupId();
 		String liferayVersion = projectTemplatesArgs.getLiferayVersion();
 		String packageName = projectTemplatesArgs.getPackageName();
+		String product = projectTemplatesArgs.getProduct();
 
 		String template = projectTemplatesArgs.getTemplate();
 
@@ -142,6 +143,7 @@ public class ProjectGenerator {
 			String.valueOf(dependencyManagementEnabled));
 		_setProperty(properties, "liferayVersion", liferayVersion);
 		_setProperty(properties, "package", packageName);
+		_setProperty(properties, "product", product);
 		_setProperty(properties, "projectType", projectType);
 
 		archetypeGenerationRequest.setProperties(properties);

@@ -134,6 +134,26 @@ public class LayoutSetBranchLocalServiceUtil {
 		return getService().deleteLayoutSetBranch(layoutSetBranchId);
 	}
 
+	public static com.liferay.portal.kernel.model.LayoutSetBranch
+			deleteLayoutSetBranch(
+				long currentLayoutPlid,
+				com.liferay.portal.kernel.model.LayoutSetBranch layoutSetBranch,
+				boolean includeMaster)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return getService().deleteLayoutSetBranch(
+			currentLayoutPlid, layoutSetBranch, includeMaster);
+	}
+
+	public static com.liferay.portal.kernel.model.LayoutSetBranch
+			deleteLayoutSetBranch(
+				long currentLayoutPlid, long layoutSetBranchId)
+		throws com.liferay.portal.kernel.exception.PortalException {
+
+		return getService().deleteLayoutSetBranch(
+			currentLayoutPlid, layoutSetBranchId);
+	}
+
 	public static void deleteLayoutSetBranches(
 			long groupId, boolean privateLayout)
 		throws com.liferay.portal.kernel.exception.PortalException {

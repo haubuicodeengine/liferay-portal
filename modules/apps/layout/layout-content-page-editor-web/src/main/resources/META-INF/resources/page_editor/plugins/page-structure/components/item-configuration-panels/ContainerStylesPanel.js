@@ -24,7 +24,7 @@ import {useDispatch, useSelector} from '../../../../app/store/index';
 import updateItemConfig from '../../../../app/thunks/updateItemConfig';
 import {getResponsiveConfig} from '../../../../app/utils/getResponsiveConfig';
 import {getLayoutDataItemPropTypes} from '../../../../prop-types/index';
-import {FieldSet} from './FieldSet';
+import {CommonStyles} from './CommonStyles';
 
 export const ContainerStylesPanel = ({item}) => {
 	const dispatch = useDispatch();
@@ -33,7 +33,7 @@ export const ContainerStylesPanel = ({item}) => {
 	);
 	const segmentsExperienceId = useSelector(selectSegmentsExperienceId);
 
-	const {availableViewportSizes, commonStyles} = config;
+	const {availableViewportSizes} = config;
 
 	const containerConfig = getResponsiveConfig(
 		item.config,
@@ -54,32 +54,6 @@ export const ContainerStylesPanel = ({item}) => {
 		);
 	};
 
-	const onCommonStyleValueSelect = (name, value) => {
-		let itemConfig = {
-			styles: {
-				[name]: value,
-			},
-		};
-
-		if (selectedViewportSize !== VIEWPORT_SIZES.desktop) {
-			itemConfig = {
-				[selectedViewportSize]: {
-					styles: {
-						[name]: value,
-					},
-				},
-			};
-		}
-
-		dispatch(
-			updateItemConfig({
-				itemConfig,
-				itemId: item.itemId,
-				segmentsExperienceId,
-			})
-		);
-	};
-
 	return (
 		<>
 			<p className="page-editor__row-styles-panel__viewport-label">
@@ -89,6 +63,10 @@ export const ContainerStylesPanel = ({item}) => {
 
 			{selectedViewportSize === VIEWPORT_SIZES.desktop && (
 				<div className="page-editor__page-structure__section__custom-styles">
+					<h1 className="sr-only">
+						{Liferay.Language.get('custom-styles')}
+					</h1>
+
 					<SelectField
 						field={{
 							label: Liferay.Language.get('container-width'),
@@ -114,20 +92,10 @@ export const ContainerStylesPanel = ({item}) => {
 				</div>
 			)}
 
-			<div className="page-editor__container-styles-panel__common-styles">
-				{commonStyles.map((fieldSet, index) => {
-					return (
-						<FieldSet
-							fields={fieldSet.styles}
-							item={item}
-							key={index}
-							label={fieldSet.label}
-							onValueSelect={onCommonStyleValueSelect}
-							values={containerConfig.styles}
-						/>
-					);
-				})}
-			</div>
+			<CommonStyles
+				commonStylesValues={containerConfig.styles}
+				item={item}
+			/>
 		</>
 	);
 };

@@ -19,13 +19,13 @@ import React, {useEffect, useState} from 'react';
 
 import {addMappedInfoItem} from '../../app/actions/index';
 import {useCollectionConfig} from '../../app/components/CollectionItemContext';
-import isMapped from '../../app/components/fragment-content/isMapped';
 import {EDITABLE_TYPES} from '../../app/config/constants/editableTypes';
 import {LAYOUT_TYPES} from '../../app/config/constants/layoutTypes';
 import {config} from '../../app/config/index';
 import CollectionService from '../../app/services/CollectionService';
 import InfoItemService from '../../app/services/InfoItemService';
 import {useDispatch, useSelector} from '../../app/store/index';
+import isMapped from '../../app/utils/isMapped';
 import {useId} from '../../app/utils/useId';
 import ItemSelector from './ItemSelector';
 
@@ -290,6 +290,7 @@ function MappingSelector({fieldType, mappedItem, onMappingSelect}) {
 
 					<ClaySelectWithOption
 						aria-label={Liferay.Language.get('source')}
+						className="pr-4 text-truncate"
 						id={mappingSelectorSourceSelectId}
 						onChange={(event) => {
 							setSelectedSourceTypeId(event.target.value);

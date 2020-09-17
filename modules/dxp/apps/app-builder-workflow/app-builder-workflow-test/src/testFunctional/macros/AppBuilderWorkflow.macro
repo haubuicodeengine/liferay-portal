@@ -1,35 +1,98 @@
 definition {
 
-	macro validateColumns {
-		AssertTextEquals(
-			locator1 = "AppBuilderWorkflow#COLUMN_ITEM",
-			value1 = "Name");
+	macro addWorkflowAppName {
 
-		AssertTextEquals(
-			locator1 = "AppBuilderWorkflow#COLUMN_ITEM",
-			value1 = "Object");
-
-		AssertTextEquals(
-			locator1 = "AppBuilderWorkflow#COLUMN_ITEM",
-			value1 = "Deployed As");
-
-		AssertTextEquals(
-			locator1 = "AppBuilderWorkflow#COLUMN_ITEM",
-			value1 = "Create Date");
-
-		AssertTextEquals(
-			locator1 = "AppBuilderWorkflow#COLUMN_ITEM",
-			value1 = "Modified Date");
-
-		AssertTextEquals(
-			locator1 = "AppBuilderWorkflow#COLUMN_ITEM",
-			value1 = "Status");
+		Type(
+			locator1 = "AppBuilderWorkflow#WORKFLOW_APP_NAME_FIELD",
+			value1 = "${workflowAppName}");
 	}
 
-	macro validateSearchItemCount {
-		AssertTextEquals(
-			locator1 = "AppBuilder#VALIDATE_SEARCH_RESULTS_BAR",
-			value1 = "${itemCount} Results for ${itemName}");
+	macro assertButtonDisabled {
+
+		AssertVisible(
+			key_text = "${buttonName}",
+			locator1 = "Button#ANY_DISABLED");
+	}
+
+	macro clickBackButton {
+
+		Click(locator1 = "AppBuilderWorkflow#BACK_BUTTON");
+	}
+
+	macro clickOnSelectFormView {
+
+		Click(locator1 = "AppBuilderWorkflow#SELECT_FORM_VIEW_BUTTON");
+	}
+
+	macro clickOnSelectObject {
+
+		Click(locator1 = "AppBuilderWorkflow#SELECT_OBJECT_BUTTON");
+	}
+
+	macro clickOnSelectTableView {
+
+		Click(locator1 = "AppBuilderWorkflow#SELECT_TABLE_VIEW_BUTTON");
+	}
+
+	macro selectDataAndViews {
+
+		Click(locator1 = "AppBuilderWorkflow#DATA_AND_VIEWS_BUTTON");
+	}
+
+	macro selectFormView {
+
+		Click(
+			key_itemName = "${formViewName}",
+			locator1 = "AppBuilderWorkflow#FORM_OR_TABLE_VIEW_ITEM");
+	}
+
+	macro selectObject {
+
+		Click(
+			key_objectName = "${objectName}",
+			locator1 = "AppBuilderWorkflow#OBJECT_ITEM");
+	}
+
+	macro selectStartStepDataAndViews {
+
+		AppBuilderWorkflow.selectDataAndViews();
+
+		AppBuilderWorkflow.clickOnSelectObject();
+		AppBuilderWorkflow.selectObject(objectName = "${objectName}");
+
+		AppBuilderWorkflow.clickOnSelectFormView();
+		AppBuilderWorkflow.selectFormView(formViewName = "${formViewName}");
+
+		AppBuilderWorkflow.clickOnSelectTableView();
+		AppBuilderWorkflow.selectTableView(tableViewName = "${tableViewName}");
+	}
+
+	macro selectTableView {
+
+		Click(
+			key_itemName = "${tableViewName}",
+			locator1 = "AppBuilderWorkflow#FORM_OR_TABLE_VIEW_ITEM");
+	}
+
+	macro validateFormOrTableViewResultNotPresent {
+
+		AssertElementNotPresent(
+			key_itemName = "${itemName}",
+			locator1 = "AppBuilderWorkflow#FORM_OR_TABLE_VIEW_ITEM");
+	}
+
+	macro validateFormOrTableViewResultPresent {
+
+		AssertElementPresent(
+			key_itemName = "${itemName}",
+			locator1 = "AppBuilderWorkflow#FORM_OR_TABLE_VIEW_ITEM");
+	}
+
+	macro waitForButtonNotPresent {
+
+		while (IsElementPresent(key_text = "${buttonName}", locator1 = "Button#ANY")) {
+			Pause(locator1 = "1000");
+		}
 	}
 
 }

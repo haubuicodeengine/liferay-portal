@@ -665,7 +665,10 @@ public class BlogsEntryLocalServiceImpl extends BlogsEntryLocalServiceBaseImpl {
 
 		// Expando
 
-		expandoRowLocalService.deleteRows(entry.getEntryId());
+		expandoRowLocalService.deleteRows(
+			entry.getCompanyId(),
+			_classNameLocalService.getClassNameId(BlogsEntry.class.getName()),
+			entry.getEntryId());
 
 		// Friendly URL
 
